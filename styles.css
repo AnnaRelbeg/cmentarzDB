@@ -591,3 +591,13 @@ footer {
 .close-modal:hover {
   color: #ccc;
 }
+
+.person-highlight a {
+  color: #6a8b5f;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.person-highlight a:hover {
+  text-decoration: underline;
+}
