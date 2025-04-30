@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
   // Make sure Firebase is initialized and `db` is defined before this code runs
-  const searchInput = document.querySelector(".search-box input");
+  const searchInput = document.querySelector("search-input");
 
   searchInput.addEventListener("input", async function() {
     const query = searchInput.value.trim().toLowerCase();
@@ -48,9 +48,10 @@ document.addEventListener("DOMContentLoaded", function () {
     snapshot.forEach(doc => {
       const data = doc.data();
       if (
-        data.fullName.toLowerCase().includes(query) ||
-        data.id.toLowerCase().includes(query)
-      ) {
+        data.fullName?.toLowerCase().includes(query) ||
+        data.id?.toLowerCase().includes(query)
+      )
+       {
         results.push(data);
       }
     });
