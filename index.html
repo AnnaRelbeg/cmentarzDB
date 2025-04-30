@@ -139,50 +139,72 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
 <script>
+  let swiper;
+  let players = [];
+
   document.addEventListener("DOMContentLoaded", function () {
-    const swiper = new Swiper(".mySwiper", {
-  loop: true,
-  grabCursor: true,
-  slidesPerView: 1,
-  spaceBetween: 20,
-  autoplay: {
-    delay: 8000,
-    disableOnInteraction: false,
-  },
-  pagination: {
-    el: ".swiper-pagination",
-    clickable: true,
-  },
-  navigation: {
-    nextEl: ".swiper-button-next",
-    prevEl: ".swiper-button-prev",
-  },
-});
+    swiper = new Swiper(".mySwiper", {
+      loop: false,
+      grabCursor: true,
+      slidesPerView: 1,
+      spaceBetween: 20,
+      pagination: {
+        el: ".swiper-pagination",
+        clickable: true,
+      },
+      navigation: {
+        nextEl: ".swiper-button-next",
+        prevEl: ".swiper-button-prev",
+      },
+    });
+  });
 
+  function onYouTubeIframeAPIReady() {
+    const iframes = document.querySelectorAll(".swiper-slide iframe");
 
-    let player;
-    function onYouTubeIframeAPIReady() {
-      player = new YT.Player('youtube-slide', {
+    iframes.forEach((iframe, index) => {
+      const player = new YT.Player(iframe, {
         events: {
-          'onReady': function (event) {
-            event.target.playVideo();
+          onReady: (event) => {
+            // Optional: play the first video automatically
+            if (index === swiper.activeIndex) {
+              event.target.playVideo();
+            }
           },
-          'onStateChange': function (event) {
+          onStateChange: (event) => {
+            if (event.data === YT.PlayerState.PLAYING) {
+              swiper.autoplay?.stop?.();
+            }
             if (event.data === YT.PlayerState.ENDED) {
               swiper.slideNext();
             }
-          }
+          },
+        },
+      });
+      players.push(player);
+    });
+
+    swiper.on("slideChange", () => {
+      players.forEach((p, i) => {
+        if (i === swiper.activeIndex) {
+          try {
+            p.playVideo();
+          } catch (e) {}
+        } else {
+          try {
+            p.pauseVideo();
+          } catch (e) {}
         }
       });
-    }
+    });
+  }
 
-    // Load YouTube Iframe API
-    const tag = document.createElement('script');
-    tag.src = "https://www.youtube.com/iframe_api";
-    document.body.appendChild(tag);
-    window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
-  });
+  // Load YouTube Iframe API
+  const tag = document.createElement("script");
+  tag.src = "https://www.youtube.com/iframe_api";
+  document.body.appendChild(tag);
 </script>
+
 <!-- in index.html -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
