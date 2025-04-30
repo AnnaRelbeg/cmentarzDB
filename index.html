@@ -201,8 +201,8 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
     snapshot.forEach((doc) => {
       const data = doc.data();
       if (
-        data.fullName.toLowerCase().includes(query) ||
-        data.id.toLowerCase().includes(query)
+        data.fullName?.toLowerCase().includes(query) ||
+        data.id?.toLowerCase().includes(query)
       ) {
         results.push(data);
       }
@@ -240,7 +240,6 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
     document.getElementById("modal-death").textContent = person.deathDate;
     document.getElementById("modal-age").textContent = person.age;
     document.getElementById("modal-description").textContent = person.description;
-
     document.getElementById("person-modal").style.display = "flex";
   }
 
