@@ -263,16 +263,19 @@ section {
   
   .video-container {
     position: relative;
+    padding-top: 56.25%; /* 16:9 aspect ratio */
     width: 100%;
     max-width: 900px;
-    aspect-ratio: 16 / 9;
     margin: 0 auto;
     overflow: hidden;
     border: none;
-    pointer-events: none; /* disable interactions */
-    mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
+    pointer-events: none;
+  
+    /* Soft fade on all sides using mask */
+    mask-image: radial-gradient(farthest-side, black 80%, transparent 100%);
+    -webkit-mask-image: radial-gradient(farthest-side, black 80%, transparent 100%);
   }
+  
   
   .video-container iframe {
     position: absolute;
