@@ -170,6 +170,89 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
     window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
   });
 </script>
+<!-- in index.html -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyChVtFHlA4mDuwx-xi7jLGMWvNYcNrrANM",
+    authDomain: "cmentarz-dabrowki.firebaseapp.com",
+    projectId: "cmentarz-dabrowki",
+    storageBucket: "cmentarz-dabrowki.appspot.com",
+    messagingSenderId: "502809191219",
+    appId: "1:502809191219:web:9526a28823974e90c91446",
+    measurementId: "G-GEDTJPLZ87"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  const searchInput = document.querySelector(".search-box input");
+  const resultsContainer = document.getElementById("results-container");
+
+  searchInput.addEventListener("input", async () => {
+    const query = searchInput.value.trim().toLowerCase();
+    if (!query) return (resultsContainer.innerHTML = "");
+
+    const snapshot = await getDocs(collection(db, "zmarli"));
+    const results = [];
+
+    snapshot.forEach((doc) => {
+      const data = doc.data();
+      if (
+        data.fullName.toLowerCase().includes(query) ||
+        data.id.toLowerCase().includes(query)
+      ) {
+        results.push(data);
+      }
+    });
+
+    displayResults(results);
+  });
+
+  function displayResults(results) {
+    resultsContainer.innerHTML = "";
+    results.forEach((person) => {
+      const card = document.createElement("div");
+      card.classList.add("person-card");
+      card.innerHTML = `
+        <img src="${person.photoUrl}" alt="${person.fullName}">
+        <h3>${person.fullName}</h3>
+        <p>Born: ${person.birthDate}</p>
+        <p>Died: ${person.deathDate}</p>
+        <button class="view-profile-btn" data-id="${person.id}">View Profile</button>
+      `;
+      resultsContainer.appendChild(card);
+    });
+
+    document.querySelectorAll(".view-profile-btn").forEach((button) => {
+      const person = results.find((p) => p.id === button.dataset.id);
+      button.addEventListener("click", () => openModal(person));
+    });
+  }
+
+  function openModal(person) {
+    document.getElementById("modal-photo").src = person.photoUrl;
+    document.getElementById("modal-name").textContent = person.fullName;
+    document.getElementById("modal-id").textContent = person.id;
+    document.getElementById("modal-birth").textContent = person.birthDate;
+    document.getElementById("modal-death").textContent = person.deathDate;
+    document.getElementById("modal-age").textContent = person.age;
+    document.getElementById("modal-description").textContent = person.description;
+
+    document.getElementById("person-modal").style.display = "flex";
+  }
+
+  document.querySelector(".modal-close").addEventListener("click", () => {
+    document.getElementById("person-modal").style.display = "none";
+  });
+
+  window.addEventListener("click", (e) => {
+    const modal = document.getElementById("person-modal");
+    if (e.target === modal) modal.style.display = "none";
+  });
+</script>
 
 <script type="module" src="script.js"></script>
 </body>
