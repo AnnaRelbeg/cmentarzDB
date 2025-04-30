@@ -30,7 +30,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-
+  
     const firebaseConfig = {
       apiKey: "AIzaSyChVtFHlA4mDuwx-xi7jLGMWvNYcNrrANM",
       authDomain: "cmentarz-dabrowki.firebaseapp.com",
@@ -40,25 +40,45 @@
       appId: "1:502809191219:web:9526a28823974e90c91446",
       measurementId: "G-GEDTJPLZ87"
     };
-
+  
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-
-    // Helper to get query param
+  
     const params = new URLSearchParams(window.location.search);
     const personId = params.get("id");
-
+  
+    const galleryContainer = document.getElementById("profile-gallery");
+  
     if (personId) {
       const docRef = doc(db, "zmarli", personId);
       getDoc(docRef).then(docSnap => {
         if (docSnap.exists()) {
           const data = docSnap.data();
+  
           document.getElementById("profile-name").textContent = data.fullName;
           document.getElementById("profile-id").textContent = data.id;
           document.getElementById("profile-birth").textContent = data.birthDate;
           document.getElementById("profile-death").textContent = data.deathDate;
           document.getElementById("profile-age").textContent = data.age;
           document.getElementById("profile-description").textContent = data.description;
+  
+          if (data.photoGallery?.length) {
+            data.photoGallery.forEach((url) => {
+              const slide = document.createElement("div");
+              slide.classList.add("swiper-slide");
+              slide.innerHTML = `<img src="${url}" alt="${data.fullName}" />`;
+              galleryContainer.appendChild(slide);
+            });
+  
+            new Swiper(".profileSwiper", {
+              loop: true,
+              pagination: { el: ".swiper-pagination", clickable: true },
+              navigation: {
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+              },
+            });
+          }
         } else {
           document.getElementById("profile-name").textContent = "Nie znaleziono profilu.";
         }
@@ -66,38 +86,8 @@
     } else {
       document.getElementById("profile-name").textContent = "Brak ID profilu w adresie URL.";
     }
-
-    const galleryContainer = document.getElementById("profile-gallery");
-
-    if (data.photoGallery?.length) {
-  data.photoGallery.forEach((url) => {
-    const slide = document.createElement("div");
-    slide.classList.add("swiper-slide");
-    slide.innerHTML = `<img src="${url}" alt="${data.fullName}" />`;
-    galleryContainer.appendChild(slide);
-  });
-
-  new Swiper(".profileSwiper", {
-    loop: true,
-    pagination: { el: ".swiper-pagination", clickable: true },
-    navigation: {
-      nextEl: ".swiper-button-next",
-      prevEl: ".swiper-button-prev",
-    },
-  });
-}
-
-
-new Swiper(".profileSwiper", {
-  loop: true,
-  pagination: { el: ".swiper-pagination", clickable: true },
-  navigation: {
-    nextEl: ".swiper-button-next",
-    prevEl: ".swiper-button-prev",
-  },
-});
-
   </script>
+  
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
 </body>
