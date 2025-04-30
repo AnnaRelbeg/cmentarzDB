@@ -145,7 +145,7 @@ nav a:hover {
 
 @media (max-width: 768px) {
   #zasluzeni {
-    background-attachment: flex; /* disables fixed background on mobile */
+    background-attachment: scroll; /* disables fixed background on mobile */
     background-position: 57% center;
   }
 }
