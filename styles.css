@@ -388,7 +388,7 @@ footer {
 .profileSwiper {
   width: 100%;
   max-width: 600px;
-  height: 80vh; /* ⬅️ Make it tall relative to viewport */
+  height: 600px; /* ⬅️ Make it tall relative to viewport */
   margin: 2rem auto;
   background: #fff;
   border-radius: 16px;
