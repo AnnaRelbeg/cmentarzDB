@@ -139,6 +139,12 @@ nav a:hover {
   padding: 4rem 1rem;
 }
 
+@media (max-width: 768px) {
+  #zasluzeni {
+    background-attachment: scroll; /* disables fixed background on mobile */
+    background-position: center top;
+  }
+}
 
 
 /* RESULTS CONTAINER */
