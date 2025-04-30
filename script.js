@@ -103,20 +103,24 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("modal-age").textContent = person.age;
     document.getElementById("modal-description").textContent = person.description;
   
-    const modal = document.getElementById("person-modal");
-    modal.style.display = "flex";
+    document.getElementById("person-modal").classList.add("show");
   }
   
   function closeModal() {
-    document.getElementById("person-modal").style.display = "none";
+    document.getElementById("person-modal").classList.remove("show");
   }
   
-  // Close modal when clicking ❌
-  document.querySelector(".modal-close").addEventListener("click", closeModal);
-  
-  // Close modal when clicking outside
-  window.addEventListener("click", e => {
+  document.addEventListener("DOMContentLoaded", () => {
+    const closeBtn = document.querySelector(".modal-close");
     const modal = document.getElementById("person-modal");
-    if (e.target === modal) closeModal();
+  
+    if (closeBtn && modal) {
+      closeBtn.addEventListener("click", closeModal);
+      window.addEventListener("click", (e) => {
+        if (e.target === modal) closeModal();
+      });
+    } else {
+      console.error("Modal close button or modal not found.");
+    }
   });
   

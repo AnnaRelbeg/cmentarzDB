@@ -99,18 +99,19 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
   </footer>
 
   <!-- Modal HTML -->
-<div id="person-modal" class="modal-overlay">
-  <div class="modal-content">
-    <button class="modal-close">&times;</button>
-    <img id="modal-photo" src="" alt="Profile Photo">
-    <h2 id="modal-name"></h2>
-    <p><strong>ID grobu:</strong> <span id="modal-id"></span></p>
-    <p><strong>Data urodzenia:</strong> <span id="modal-birth"></span></p>
-    <p><strong>Data śmierci:</strong> <span id="modal-death"></span></p>
-    <p><strong>Wiek:</strong> <span id="modal-age"></span> lat</p>
-    <p id="modal-description"></p>
+  <div id="person-modal" class="modal-overlay">
+    <div class="modal-content">
+      <button class="modal-close">&times;</button>
+      <img id="modal-photo" src="" alt="Profile Photo">
+      <h2 id="modal-name"></h2>
+      <p><strong>ID grobu:</strong> <span id="modal-id"></span></p>
+      <p><strong>Data urodzenia:</strong> <span id="modal-birth"></span></p>
+      <p><strong>Data śmierci:</strong> <span id="modal-death"></span></p>
+      <p><strong>Wiek:</strong> <span id="modal-age"></span> lat</p>
+      <p id="modal-description"></p>
+    </div>
   </div>
-</div>
+  
   <!-- AOS Scripts -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
   <script>
@@ -226,9 +227,21 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
   });
 
   document.querySelectorAll(".view-profile-btn").forEach(button => {
-    const person = results.find(p => p.id === button.dataset.id);
-    button.addEventListener("click", () => openModal(person));
+  button.addEventListener("click", () => {
+    const selectedId = button.dataset.id;
+    console.log("🔍 Clicked button for ID:", selectedId);
+
+    const person = results.find(p => p.id === selectedId);
+    if (person) {
+      console.log("✅ Found person:", person);
+      openModal(person);
+    } else {
+      console.warn("❌ Person not found for ID:", selectedId);
+    }
   });
+});
+
+
 }
 
 function openModal(person) {
@@ -240,20 +253,37 @@ function openModal(person) {
   document.getElementById("modal-age").textContent = person.age;
   document.getElementById("modal-description").textContent = person.description;
 
-  document.getElementById("person-modal").style.display = "flex";
+  document.getElementById("person-modal").classList.add("show");
 }
 
+function closeModal() {
+  document.getElementById("person-modal").classList.remove("show");
+}
 
-  document.querySelector(".modal-close").addEventListener("click", () => {
-    document.getElementById("person-modal").style.display = "none";
-  });
+document.addEventListener("DOMContentLoaded", () => {
+  const closeBtn = document.querySelector(".modal-close");
+  const modal = document.getElementById("person-modal");
+
+  if (closeBtn && modal) {
+    closeBtn.addEventListener("click", closeModal);
+    window.addEventListener("click", (e) => {
+      if (e.target === modal) closeModal();
+    });
+  } else {
+    console.error("Modal close button or modal not found.");
+  }
+});
+
+</script>
+
+<script type="module" src="script.js">document.addEventListener("DOMContentLoaded", () => {
+  document.querySelector(".modal-close").addEventListener("click", closeModal);
 
   window.addEventListener("click", (e) => {
     const modal = document.getElementById("person-modal");
-    if (e.target === modal) modal.style.display = "none";
+    if (e.target === modal) closeModal();
   });
+});
 </script>
-
-<script type="module" src="script.js"></script>
 </body>
 </html>
