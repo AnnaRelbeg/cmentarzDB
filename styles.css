@@ -507,3 +507,54 @@ footer {
 #submit-memory:hover {
   background-color: #59714d;
 }
+
+
+/* --------------------------------
+    GALLERY
+  --------------------------------*/
+
+#gallery {
+  padding: 3rem 1rem;
+  background: #f9f9f9;
+  text-align: center;
+}
+
+.gallery-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.main-image img {
+  width: 100%;
+  max-height: 500px;
+  object-fit: cover;
+  border-radius: 16px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+  transition: opacity 0.5s ease;
+}
+
+.thumbnails {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 1rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+.thumbnails .thumb {
+  height: 80px;
+  border-radius: 10px;
+  object-fit: cover;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  flex-shrink: 0;
+}
+
+.thumbnails .thumb:hover,
+.thumbnails .thumb.active {
+  opacity: 1;
+  transform: scale(1.05);
+  border: 2px solid #6a8b5f;
+}

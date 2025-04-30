@@ -69,7 +69,6 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
     ></iframe>
   </div>
 </div>
-
 <!-- Second YouTube Slide -->
 <div class="swiper-slide">
   <div class="video-container">
@@ -88,6 +87,23 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
   <div class="swiper-pagination"></div>
 </div>
 </section>
+
+<section id="gallery" data-aos="fade-up" data-aos-delay="300">
+  <h2>Galeria zdjęć</h2>
+  <div class="gallery-container">
+    <div class="main-image">
+      <img id="current-image" src="assets/images/cmDB.JPG" alt="Główne zdjęcie" />
+    </div>
+    <div class="thumbnails">
+      <img src="assets/images/black_redflower.jpeg" alt="miniatura 1" class="thumb active" />
+      <img src="assets/images/cmDB.JPG" alt="miniatura 2" class="thumb" />
+      <img src="assets/images/cmDB.JPG" alt="miniatura 3" class="thumb" />
+      <img src="assets/images/cmDB.JPG" alt="miniatura 4" class="thumb" />
+    </div>
+  </div>
+</section>
+
+
 
 <section id="zasluzeni" class="highlight-section">
   <h2>Zasłużeni</h2>
@@ -199,6 +215,26 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
   tag.src = "https://www.youtube.com/iframe_api";
   document.body.appendChild(tag);
 </script>
+
+<!-- GALLERY -->
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const mainImage = document.getElementById("current-image");
+    const thumbnails = document.querySelectorAll(".thumb");
+
+    thumbnails.forEach(thumb => {
+      thumb.addEventListener("click", () => {
+        thumbnails.forEach(t => t.classList.remove("active"));
+        thumb.classList.add("active");
+        mainImage.src = thumb.src;
+        mainImage.style.opacity = 0.6;
+        setTimeout(() => mainImage.style.opacity = 1, 200);
+      });
+    });
+  });
+</script>
+
 
 <!-- in index.html -->
 <script type="module">
