@@ -24,11 +24,64 @@
         background-position: center top;
       }
     }
+    
+    /* ---------------------------------
+       Slide Show 
+    ---------------------------------*/
+    /* Slideshow Styles */
+    .slideshow-container {
+      position: fixed; /* Set the slideshow container to a fixed position */
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1; /* Place it behind the content */
+      overflow: hidden; /* Hide overflow */
+  }
+
+  .mySlides {
+      max-width: 100%;
+      position: absolute; /* Position slides absolutely within the container */
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+  }
+
+  img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover; /* Ensure images cover the entire container */
+  }
+
+  .slideshow-text {
+      /* Your text styles for the slides */
+      color: #fff;
+      text-align: center;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%); /* Center text vertically and horizontally */
+  }
   </style>
   
 
 </head>
 <body>
+  <!-- Move the slideshow-container outside of the main section -->
+  <div class="slideshow-container">
+    <!-- Slides for the image slideshow -->
+    <div class="mySlides fade">
+        <img src="assets/images/black_redflower.jpeg" alt="Slideshow Image 1">
+    </div>
+    <div class="mySlides fade">
+        <img src="assets/images/black_flower.jpeg" alt="Slideshow Image 2">
+    </div>
+    <!-- Add more slides as needed -->
+</div>
+
+
+
   <div id="profile-container">
     <h1 id="profile-name">Ładowanie...</h1>
     <div class="swiper profileSwiper">
@@ -46,7 +99,19 @@
     <p id="profile-description"></p>
     <a class="back-button" href="index.html">← Powrót</a>
   </div>
-
+  <script>// Slideshow
+    let slideIndex = 0;
+    function showSlides() {
+        const slides = document.getElementsByClassName("mySlides");
+        for (let i = 0; i < slides.length; i++) {
+            slides[i].style.display = "none";
+        }
+        slideIndex = (slideIndex + 1) % slides.length;
+        slides[slideIndex].style.display = "block";
+        setTimeout(showSlides, 10000);
+    }
+    showSlides();
+    </script>
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
