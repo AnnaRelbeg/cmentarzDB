@@ -1,0 +1,162 @@
+body {
+  margin: 0;
+  font-family: 'Open Sans', sans-serif;
+  background-color: #f4f4f2;
+  color: #2f2f2f;
+}
+
+header {
+  background:url(assets/images/black_angel.jpeg) no-repeat center center/cover;
+  height: 100vh;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+}
+
+header::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+header .content {
+  position: relative;
+  z-index: 1;
+  padding: 0 1rem;
+}
+
+header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+header p {
+  font-size: 1.3rem;
+  margin-bottom: 2rem;
+}
+
+.search-box {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+nav {
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+nav a {
+  text-decoration: none;
+  color: #2f2f2f;
+  font-weight: bold;
+}
+
+nav a:hover {
+  color: #6a8b5f;
+}
+
+/* Menu button (hidden on desktop) */
+.menu-button {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+/* Navigation menu */
+.navbar ul {
+  list-style: none;
+  display: flex;
+  gap: 15px;
+  padding: 0;
+}
+
+/* Mobile menu hidden */
+@media (max-width: 768px) {
+  .menu-button {
+    display: block;
+  }
+
+  .navbar ul {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    text-align: center;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  }
+
+  .navbar ul.active {
+    display: flex;
+  }
+}
+  
+section {
+  padding: 3rem 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/*---------------------
+  SLIDE SHOW 
+  ----------------------*/
+
+  /* Swiper slideshow custom styles */
+  .swiper {
+    width: 100%;
+    height: 80vh; /* 60% of screen height */
+    max-height: 700px;
+    min-height: 300px;
+    margin-top: 2rem;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  
+.swiper-slide img,
+.swiper-slide video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+footer {
+  background-color: #eaeaea;
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 600px) {
+  header h1 {
+    font-size: 2rem;
+  }
+
+  .search-box input {
+    font-size: 0.9rem;
+  }
+}

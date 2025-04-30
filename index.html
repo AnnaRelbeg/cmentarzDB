@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cmentarz Dąbrówki Breńskie</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Open+Sans&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <!-- AOS Library (Animate on Scroll) -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css"
+  />
+  <!-- Swiper CSS -->
+<link
+rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+/>
+<!-- Firebase App (Core SDK) -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+
+<!-- Firebase Firestore -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+<!-- Firebase Storage (optional if using) -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+
+</head>
+<body>
+  <nav class="navbar">
+    <button class="menu-button" onclick="toggleMenu()">☰</button>
+    <ul>
+      <li><a href="#about">O Cmentarzu</a></li>
+      <li><a href="#locator">Znajdź Grób</a></li>
+      <li><a href="#contact">Kontakt</a></li>      
+    </ul>
+  </nav>
+
+  <header>
+    <div class="content">
+      <h1 data-aos="fade-up" data-aos-delay="300">Cmentarz Dąbrówki Breńskie</h1>
+      <p data-aos="fade-up" data-aos-delay="300">„Pamięć to forma spotkania, które trwa wiecznie.”</p>
+      <div class="search-box">
+        <input type="text" placeholder="Szukaj imienia lub nazwiska...">
+      </div>
+    </div>
+  </header>
+
+  <section id="about">
+    <h2 data-aos="fade-up" data-aos-delay="300">O Cmentarzu</h2>
+    <p data-aos="fade-up" data-aos-delay="300">
+        Cmentarz Parafialny p.w. Przemienienia Pańskiego w Dąbrówkach Breńskich to miejsce zadumy, modlitwy i wspomnień. 
+        Spoczywają tu mieszkańcy naszej wsi i okolicznych miejscowości – ci, którzy budowali wspólnotę, przekazywali wartości i wiernie kroczyli przez życie.Dzięki tej stronie możesz łatwo odszukać groby bliskich, przejrzeć archiwa i podzielić się wspomnieniami.
+    </p>
+<!-- Swiper -->
+<div class="swiper mySwiper" data-aos="fade-up" data-aos-delay="300">
+  <div class="swiper-wrapper">
+    <!-- Image Slide -->
+    <div class="swiper-slide">
+      <img src="assets/images/cmDB.JPG" alt="Cemetery 1" />
+    </div>
+    <!-- Video Slide -->
+    <div class="swiper-slide">
+      <video autoplay muted loop playsinline>
+        <source src="assets/images/CMVid.mp4" type="video/mp4" />
+        Twoja przeglądarka nie obsługuje wideo.
+      </video>
+    </div>
+    <div class="swiper-slide">
+      <video autoplay muted loop playsinline>
+        <source src="assets/images/DB_Park.mp4" type="video/mp4" />
+        Twoja przeglądarka nie obsługuje wideo.
+      </video>
+    </div>
+  </div>
+
+  <!-- Arrows and Dots -->
+  <div class="swiper-button-next"></div>
+  <div class="swiper-button-prev"></div>
+  <div class="swiper-pagination"></div>
+</div>
+
+
+  </section>
+
+  <section id="locator">
+    <h2 data-aos="fade-up" data-aos-delay="300">Znajdź Grób</h2>
+    <p data-aos="fade-up" data-aos-delay="300">
+      Wprowadź imię i nazwisko, aby odszukać miejsce pochówku bliskiej osoby oraz zapalić wirtualną świeczkę.
+    </p>
+  </section>
+  <div id="results-container"></div>
+
+  <section id="contact" data-aos="fade-up" data-aos-delay="300">
+    <h2 data-aos="fade-up" data-aos-delay="300">Kontakt</h2>
+    <p data-aos="fade-up" data-aos-delay="300">
+      Masz pytania lub chcesz zgłosić poprawki? Skontaktuj się z nami pod adresem: <br/>
+      <a href="mailto:kontakt@cmentarz-dabrowki.pl">kontakt@cmentarz-dabrowki.pl</a>
+    </p>
+  </section>
+
+  <footer data-aos="fade-up" data-aos-delay="300">
+    &copy; 2025 Cmentarz Dąbrówki Breńskie. Wszelkie prawa zastrzeżone.
+  </footer>
+
+  <!-- Modal HTML -->
+<div id="person-modal" class="modal-overlay">
+  <div class="modal-content">
+    <button class="modal-close">&times;</button>
+    <img id="modal-photo" src="" alt="Profile Photo">
+    <h2 id="modal-name"></h2>
+    <p><strong>ID grobu:</strong> <span id="modal-id"></span></p>
+    <p><strong>Data urodzenia:</strong> <span id="modal-birth"></span></p>
+    <p><strong>Data śmierci:</strong> <span id="modal-death"></span></p>
+    <p><strong>Wiek:</strong> <span id="modal-age"></span> lat</p>
+    <p id="modal-description"></p>
+  </div>
+</div>
+  <!-- AOS Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+  <script>
+    AOS.init({
+      duration: 1000,
+      once: true
+    });
+  </script>
+  
+<!-- Swiper JS -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const swiper = new Swiper(".mySwiper", {
+      loop: true,
+      grabCursor: true,
+      pagination: {
+        el: ".swiper-pagination",
+        clickable: true,
+      },
+      navigation: {
+        nextEl: ".swiper-button-next",
+        prevEl: ".swiper-button-prev",
+      },
+      slidesPerView: 1,
+      spaceBetween: 20,
+      autoplay: false, // We will control it manually
+    });
+
+    function handleVideoSlide(swiper) {
+      const currentSlide = swiper.slides[swiper.activeIndex];
+      const video = currentSlide.querySelector("video");
+
+      if (video) {
+        video.currentTime = 0;
+        video.play();
+
+        video.onended = () => {
+          swiper.slideNext();
+        };
+      } else {
+        // If it's not a video, just go to next slide after delay
+        setTimeout(() => {
+          swiper.slideNext();
+        }, 5000); // adjust timing as needed
+      }
+    }
+
+    // Initial load
+    handleVideoSlide(swiper);
+
+    // When slide changes (e.g. user manually navigates)
+    swiper.on("slideChange", () => {
+      handleVideoSlide(swiper);
+    });
+  });
+</script>
+<script type="module" src="script.js"></script>
+</body>
+</html>
