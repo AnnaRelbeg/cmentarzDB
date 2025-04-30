@@ -90,37 +90,5 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
   
-  // ---------------------------
-  // Modal Logic
-  // ---------------------------
-  
-  function openModal(person) {
-    document.getElementById("modal-photo").src = person.photoURL;
-    document.getElementById("modal-name").textContent = person.fullName;
-    document.getElementById("modal-id").textContent = person.id;
-    document.getElementById("modal-birth").textContent = person.birthDate;
-    document.getElementById("modal-death").textContent = person.deathDate;
-    document.getElementById("modal-age").textContent = person.age;
-    document.getElementById("modal-description").textContent = person.description;
-  
-    document.getElementById("person-modal").classList.add("show");
-  }
-  
-  function closeModal() {
-    document.getElementById("person-modal").classList.remove("show");
-  }
-  
-  document.addEventListener("DOMContentLoaded", () => {
-    const closeBtn = document.querySelector(".modal-close");
-    const modal = document.getElementById("person-modal");
-  
-    if (closeBtn && modal) {
-      closeBtn.addEventListener("click", closeModal);
-      window.addEventListener("click", (e) => {
-        if (e.target === modal) closeModal();
-      });
-    } else {
-      console.error("Modal close button or modal not found.");
-    }
-  });
+ 
   

@@ -5,17 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Profil osoby</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
 </head>
 <body>
   <div id="profile-container">
     <h1 id="profile-name">Ładowanie...</h1>
-    <img id="profile-photo" src="" alt="Zdjęcie" />
+    <div class="swiper profileSwiper">
+        <div class="swiper-wrapper" id="profile-gallery">
+          <!-- Slides will be inserted here -->
+        </div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-pagination"></div>
+      </div>      
     <p><strong>ID grobu:</strong> <span id="profile-id"></span></p>
     <p><strong>Data urodzenia:</strong> <span id="profile-birth"></span></p>
     <p><strong>Data śmierci:</strong> <span id="profile-death"></span></p>
     <p><strong>Wiek:</strong> <span id="profile-age"></span> lat</p>
     <p id="profile-description"></p>
-    <a href="index.html">← Powrót</a>
+    <a class="back-button" href="index.html">← Powrót</a>
   </div>
 
   <script type="module">
@@ -58,6 +67,27 @@
     } else {
       document.getElementById("profile-name").textContent = "Brak ID profilu w adresie URL.";
     }
+
+    const galleryContainer = document.getElementById("profile-gallery");
+
+person.photoGallery.forEach((url) => {
+  const slide = document.createElement("div");
+  slide.classList.add("swiper-slide");
+  slide.innerHTML = `<img src="${url}" alt="${person.fullName}" />`;
+  galleryContainer.appendChild(slide);
+});
+
+new Swiper(".profileSwiper", {
+  loop: true,
+  pagination: { el: ".swiper-pagination", clickable: true },
+  navigation: {
+    nextEl: ".swiper-button-next",
+    prevEl: ".swiper-button-prev",
+  },
+});
+
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
 </body>
 </html>

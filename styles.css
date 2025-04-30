@@ -361,3 +361,33 @@ footer {
 .back-button:hover {
   background-color: #59714d;
 }
+
+.back-button {
+  display: inline-block;
+  margin-top: 2rem;
+  padding: 0.7rem 1.5rem;
+  background-color: #6a8b5f;
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 12px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.back-button:hover {
+  background-color: #59714d;
+}
+
+.profileSwiper {
+  width: 100%;
+  height: 300px;
+  margin-bottom: 1.5rem;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.profileSwiper .swiper-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
