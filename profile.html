@@ -84,7 +84,6 @@
 
   <div id="profile-container">
     <h1 id="profile-name">Ładowanie...</h1>
-    <div class="virtual-candle" aria-label="Wirtualna świeca">🕯️</div>
     <div class="swiper profileSwiper">
         <div class="swiper-wrapper" id="profile-gallery">
           <!-- Slides will be inserted here -->
@@ -164,6 +163,12 @@
   
             new Swiper(".profileSwiper", {
               loop: true,
+              effect: "fade",
+              speed: 1000,
+              autoplay: {
+                delay: 5000,
+                disableOnInteraction: false
+            },
               pagination: { el: ".swiper-pagination", clickable: true },
               navigation: {
                 nextEl: ".swiper-button-next",

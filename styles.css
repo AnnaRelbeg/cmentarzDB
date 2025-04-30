@@ -372,30 +372,35 @@ footer {
 
 .profileSwiper {
   width: 100%;
-  height: 300px;
-  margin-bottom: 1.5rem;
+  max-width: 800px;
+  aspect-ratio: 16 / 9;
+  margin: 2rem auto;
   border-radius: 16px;
   overflow: hidden;
+  position: relative;
 }
 
 .profileSwiper .swiper-slide img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
+  border-radius: 0;
 }
 
-.profileSwiper {
-  width: 100%;
-  max-width: 600px;
-  margin: 2rem auto;
+@media (max-width: 768px) {
+  .profileSwiper {
+    aspect-ratio: 4 / 3;
+  }
 }
 
-.profileSwiper img {
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-  border-radius: 12px;
+@media (max-width: 600px) {
+  .swiper-button-next,
+  .swiper-button-prev {
+    display: none;
+  }
 }
+
 
 @media (max-width: 600px) {
   .search-box {
@@ -435,15 +440,3 @@ footer {
   }
 }
 
-.virtual-candle {
-  font-size: 3rem;
-  text-align: center;
-  margin-top: 1rem;
-  animation: flicker 1.5s infinite alternate ease-in-out;
-}
-
-@keyframes flicker {
-  0% { opacity: 1; }
-  50% { opacity: 0.6; }
-  100% { opacity: 1; }
-}
