@@ -61,6 +61,7 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
       <img src="assets/images/cmDB.JPG" alt="Cemetery 1" />
     </div>
 <!-- YouTube Slide -->
+<!-- First YouTube Slide -->
 <div class="swiper-slide">
   <div class="video-container">
     <iframe
@@ -68,18 +69,22 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
       frameborder="0"
       allow="autoplay; encrypted-media"
       allowfullscreen
-      id="youtube-slide"
     ></iframe>
-    <iframe
-    src="https://www.youtube.com/embed/dIVJX_QRFAA?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&loop=0&enablejsapi=1"
-    frameborder="0"
-    allow="autoplay; encrypted-media"
-    allowfullscreen
-    id="youtube-slide"
-  ></iframe>
   </div>
 </div>
+
+<!-- Second YouTube Slide -->
+<div class="swiper-slide">
+  <div class="video-container">
+    <iframe
+      src="https://www.youtube.com/embed/dIVJX_QRFAA?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&loop=0&enablejsapi=1"
+      frameborder="0"
+      allow="autoplay; encrypted-media"
+      allowfullscreen
+    ></iframe>
+  </div>
 </div>
+
 
   <!-- Arrows and Dots -->
   <div class="swiper-button-next"></div>
@@ -89,7 +94,7 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
 </section>
 
 <section id="zasluzeni" class="highlight-section">
-  <h2>Zasłużeni lub Znani Pochowani</h2>
+  <h2>Zasłużeni</h2>
 
   <div class="person-highlight">
     <h3>Ks. Władysław Januś</h3>
@@ -101,7 +106,7 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
   <div class="person-highlight">
     <h3>Ks. Michał Łos FDP</h3>
     <p>
-      Ks. Michał Łos (1991–2019) był młodym kapłanem, który pokazał światu, czym jest prawdziwa wiara i odwaga. Gdy ciężka choroba przerwała jego formację, nie przestał marzyć o kapłaństwie. Dzięki wyjątkowej łasce papieża Franciszka przyjął święcenia w szpitalnej sali i zdążył odprawić trzy Msze Święte. Jego krótkie, ale niezwykle głębokie kapłańskie życie było świadectwem świętości, które poruszyło serca tysięcy ludzi. Spoczywa w grobowcu kapłańskim – obok ks. Januśa, w swojej ukochanej rodzinnej parafii.
+      Ks. Michał Łos (1991–2019) był młodym kapłanem, który pokazał światu, czym jest prawdziwa wiara i odwaga. Gdy ciężka choroba przerwała jego formację, nie przestał marzyć o kapłaństwie. Dzięki wyjątkowej łasce papieża Franciszka przyjął święcenia w szpitalnej sali i zdążył odprawić trzy Msze Święte. Jego krótkie, ale niezwykle głębokie kapłańskie życie było świadectwem świętości, które poruszyło serca tysięcy ludzi. Spoczywa w grobowcu kapłańskim – w swojej ukochanej rodzinnej parafii.
     </p>
   </div>
 </section>
@@ -135,19 +140,23 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const swiper = new Swiper(".mySwiper", {
-      loop: false, // important — don’t auto-slide
-      grabCursor: true,
-      pagination: {
-        el: ".swiper-pagination",
-        clickable: true,
-      },
-      navigation: {
-        nextEl: ".swiper-button-next",
-        prevEl: ".swiper-button-prev",
-      },
-      slidesPerView: 1,
-      spaceBetween: 20,
-    });
+  loop: true,
+  grabCursor: true,
+  slidesPerView: 1,
+  spaceBetween: 20,
+  autoplay: {
+    delay: 8000,
+    disableOnInteraction: false,
+  },
+  pagination: {
+    el: ".swiper-pagination",
+    clickable: true,
+  },
+  navigation: {
+    nextEl: ".swiper-button-next",
+    prevEl: ".swiper-button-prev",
+  },
+});
 
     let player;
     function onYouTubeIframeAPIReady() {
