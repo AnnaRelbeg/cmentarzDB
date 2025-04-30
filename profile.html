@@ -100,6 +100,8 @@
     <div id="profile-memory">
         <h2>Wspomnienie</h2>
         <p id="profile-memory-text">Brak wspomnienia.</p>
+        <p id="memory-success" style="color: green; display: none; margin-top: 1rem;">Dziękujemy za dodanie wspomnienia!</p>
+        
       </div>      
     <a class="back-button" href="index.html">← Powrót</a>
   </div>
@@ -119,7 +121,7 @@
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
   
     const firebaseConfig = {
       apiKey: "AIzaSyChVtFHlA4mDuwx-xi7jLGMWvNYcNrrANM",
@@ -152,7 +154,7 @@
           document.getElementById("profile-age").textContent = data.age;
           document.getElementById("profile-description").textContent = data.description;
           document.getElementById("profile-memory-text").textContent = data.memoryText || "Brak wspomnienia.";
-
+  
           if (data.photoGallery?.length) {
             data.photoGallery.forEach((url) => {
               const slide = document.createElement("div");
@@ -162,26 +164,55 @@
             });
   
             new Swiper(".profileSwiper", {
-  loop: true,
-  autoplay: {
-    delay: 5000,
-    disableOnInteraction: false
-  },
-  effect: "fade",
-  fadeEffect: {
-    crossFade: true
-  },
-  pagination: {
-    el: ".swiper-pagination",
-    clickable: true
-  },
-  navigation: {
-    nextEl: ".swiper-button-next",
-    prevEl: ".swiper-button-prev"
-  }
-});
-
+              loop: true,
+              autoplay: {
+                delay: 5000,
+                disableOnInteraction: false
+              },
+              effect: "fade",
+              fadeEffect: {
+                crossFade: true
+              },
+              pagination: {
+                el: ".swiper-pagination",
+                clickable: true
+              },
+              navigation: {
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev"
+              }
+            });
           }
+  
+          // Memory form submission handling
+          const memoryForm = document.createElement("form");
+          memoryForm.id = "memory-form";
+          memoryForm.style.marginTop = "1.5rem";
+          memoryForm.innerHTML = `
+            <textarea id="memory-input" rows="4" placeholder="Dodaj swoje wspomnienie..." required style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid #ccc;"></textarea>
+            <button type="submit" style="margin-top: 0.75rem; background-color: #6a8b5f; color: white; padding: 0.5rem 1rem; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">Zapisz wspomnienie</button>
+            <p id="memory-success" style="color: green; display: none; margin-top: 1rem;">Dziękujemy za dodanie wspomnienia!</p>
+          `;
+          document.getElementById("profile-memory").appendChild(memoryForm);
+  
+          memoryForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const memoryInput = document.getElementById("memory-input");
+            const memorySuccess = document.getElementById("memory-success");
+            const memoryText = memoryInput.value.trim();
+            if (!memoryText) return;
+  
+            try {
+              await updateDoc(docRef, { memoryText });
+              document.getElementById("profile-memory-text").textContent = memoryText;
+              memoryInput.value = "";
+              memorySuccess.style.display = "block";
+            } catch (error) {
+              alert("Wystąpił błąd podczas zapisywania wspomnienia. Spróbuj ponownie.");
+              console.error(error);
+            }
+          });
+  
         } else {
           document.getElementById("profile-name").textContent = "Nie znaleziono profilu.";
         }
@@ -190,5 +221,6 @@
       document.getElementById("profile-name").textContent = "Brak ID profilu w adresie URL.";
     }
   </script>
+  
 </body>
 </html>
