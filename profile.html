@@ -84,6 +84,7 @@
 
   <div id="profile-container">
     <h1 id="profile-name">Ładowanie...</h1>
+    <div class="virtual-candle" aria-label="Wirtualna świeca">🕯️</div>
     <div class="swiper profileSwiper">
         <div class="swiper-wrapper" id="profile-gallery">
           <!-- Slides will be inserted here -->
@@ -97,6 +98,10 @@
     <p><strong>Data śmierci:</strong> <span id="profile-death"></span></p>
     <p><strong>Wiek:</strong> <span id="profile-age"></span> lat</p>
     <p id="profile-description"></p>
+    <div id="profile-memory">
+        <h2>Wspomnienie</h2>
+        <p id="profile-memory-text">Brak wspomnienia.</p>
+      </div>      
     <a class="back-button" href="index.html">← Powrót</a>
   </div>
   <script>// Slideshow
@@ -147,7 +152,8 @@
           document.getElementById("profile-death").textContent = data.deathDate;
           document.getElementById("profile-age").textContent = data.age;
           document.getElementById("profile-description").textContent = data.description;
-  
+          document.getElementById("profile-memory-text").textContent = data.memoryText || "Brak wspomnienia.";
+
           if (data.photoGallery?.length) {
             data.photoGallery.forEach((url) => {
               const slide = document.createElement("div");
