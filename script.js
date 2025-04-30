@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const card = document.createElement("div");
       card.classList.add("person-card");
       card.innerHTML = `
-        <img src="${person.photoUrl}" alt="${person.fullName}" referrerpolicy="no-referrer">
+        <img src="${person.photoURL}" alt="${person.fullName}" referrerpolicy="no-referrer">
         <h3>${person.fullName}</h3>
         <p>Rok urodzenia: ${person.birthDate.split("-")[0]}</p>
         <p>Rok śmierci: ${person.deathDate.split("-")[0]}</p>
@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // ---------------------------
   
   function openModal(person) {
-    document.getElementById("modal-photo").src = person.photoUrl;
+    document.getElementById("modal-photo").src = person.photoURL;
     document.getElementById("modal-name").textContent = person.fullName;
     document.getElementById("modal-id").textContent = person.id;
     document.getElementById("modal-birth").textContent = person.birthDate;
