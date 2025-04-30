@@ -244,28 +244,30 @@ section {
 
   /* Swiper slideshow custom styles */
   .swiper {
+    position: fixed; /* Set the slideshow container to a fixed position */
+    top: 0;
+    left: 0;
     width: 100%;
-    max-width: 900px;
-    height: auto;
-    aspect-ratio: 16 / 9;
-    margin: 2rem auto;
-    border-radius: 12px;
-    overflow: hidden;
+    height: 100%;
+    z-index: -1; /* Place it behind the content */
+    overflow: hidden; /* Hide overflow */
   }
   
   .swiper-slide img,
   .swiper-slide video {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    display: block;
+    object-fit: cover; /* Ensure images cover the entire container */
   }
   
   .video-container {
-    position: relative;
+    max-width: 100%;
+    position: absolute; /* Position slides absolutely within the container */
+    top: 0;
+    left: 0;
     width: 100%;
-    aspect-ratio: 16 / 9;
-    overflow: hidden;
+    height: 100%;
+    pointer-events: none; /* disables interaction */
   }
   
   .video-container iframe {
