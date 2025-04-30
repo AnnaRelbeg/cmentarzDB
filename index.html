@@ -54,12 +54,6 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
         Cmentarz Parafialny p.w. Przemienienia Pańskiego w Dąbrówkach Breńskich to miejsce zadumy, modlitwy i wspomnień. 
         Spoczywają tu mieszkańcy naszej wsi i okolicznych miejscowości – ci, którzy budowali wspólnotę, przekazywali wartości i wiernie kroczyli przez życie. Dzięki tej stronie możesz łatwo odszukać groby bliskich, przejrzeć archiwa i podzielić się wspomnieniami.
     </p>
-    <div class="about-video-wrapper" data-aos="fade-up" data-aos-delay="400">
-      <video class="about-video" autoplay muted loop playsinline>
-        <source src="assets/images/VidCM1.mp4" type="video/mp4" />
-        Twoja przeglądarka nie obsługuje odtwarzacza wideo.
-      </video>
-    </div>
   </section>
 
 <section id="gallery" data-aos="fade-up" data-aos-delay="300" class="section gallery">
@@ -118,6 +112,12 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
     &copy; 2025 Cmentarz Dąbrówki Breńskie. Wszelkie prawa zastrzeżone.
   </footer>
 
+  <!-- Modal Lightbox -->
+<div id="image-modal" class="image-modal">
+  <span class="close-modal">&times;</span>
+  <img class="modal-content" id="modal-image">
+</div>
+
   <!-- AOS Scripts -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
   <script>
@@ -167,6 +167,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </script>
 
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+  const mainImage = document.getElementById("current-image");
+  const modal = document.getElementById("image-modal");
+  const modalImg = document.getElementById("modal-image");
+  const closeBtn = document.querySelector(".close-modal");
+
+  mainImage.addEventListener("click", () => {
+    modal.style.display = "block";
+    modalImg.src = mainImage.src;
+  });
+
+  closeBtn.addEventListener("click", () => {
+    modal.style.display = "none";
+  });
+
+  window.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      modal.style.display = "none";
+    }
+  });
+});
+
+</script>
 
 <!-- in index.html -->
 <script type="module">
