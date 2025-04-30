@@ -374,27 +374,33 @@ footer {
   width: 100%;
   max-width: 600px;
   margin: 2rem auto;
-  background-color: #fff;
+  background: #fff;
   border-radius: 16px;
   overflow: hidden;
+  position: relative;
 }
-
 
 .profileSwiper .swiper-slide {
   display: flex;
-  align-items: center;
   justify-content: center;
-  padding: 1rem;
+  align-items: center;
+  padding: 0;
 }
 
 .profileSwiper .swiper-slide img {
   width: auto;
   height: auto;
   max-width: 100%;
-  max-height: 70vh;
+  max-height: 80vh; /* Prevent image from exceeding screen height */
   object-fit: contain;
   border-radius: 12px;
 }
+
+.profileSwiper .swiper-slide {
+  transition: all 0.3s ease-in-out;
+  background-color: #fff;
+}
+
 
 @media (max-width: 768px) {
   .profileSwiper {

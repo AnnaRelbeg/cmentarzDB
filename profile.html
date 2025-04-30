@@ -163,23 +163,24 @@
   
             new Swiper(".profileSwiper", {
   loop: true,
-  effect: "fade",
   autoplay: {
-    delay: 4000,
-    disableOnInteraction: false,
+    delay: 5000,
+    disableOnInteraction: false
   },
+  effect: "fade",
   fadeEffect: {
-    crossFade: true,
+    crossFade: true
   },
   pagination: {
     el: ".swiper-pagination",
-    clickable: true,
+    clickable: true
   },
   navigation: {
     nextEl: ".swiper-button-next",
-    prevEl: ".swiper-button-prev",
-  },
+    prevEl: ".swiper-button-prev"
+  }
 });
+
           }
         } else {
           document.getElementById("profile-name").textContent = "Nie znaleziono profilu.";
