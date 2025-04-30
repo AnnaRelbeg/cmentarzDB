@@ -265,25 +265,31 @@ section {
     position: relative;
     width: 100%;
     aspect-ratio: 16 / 9;
-    margin: 0 auto;
     overflow: hidden;
-    pointer-events: none;
   }
-  
-  
   
   .video-container iframe {
     position: absolute;
     top: -10%;
-    left: 5%;
-    right: 5%;
+    left: 0;
     width: 100%;
-    height: 100%;
-    inset: 0;
-    border: none !important;
-    outline: none;
-    pointer-events: none; /* disables hover and clicks */
+    height: 120%;
+    border: 0;
+    object-fit: cover;
+    pointer-events: none; /* disables interaction */
   }
+  
+  .video-container iframe {
+    opacity: 0;
+    animation: fadeIn 2s ease forwards;
+  }
+  
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+    }
+  }
+  
   
   /* Mobile tweaks */
   @media (max-width: 480px) {
