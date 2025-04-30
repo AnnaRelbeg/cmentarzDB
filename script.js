@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const card = document.createElement("div");
       card.classList.add("person-card");
       card.innerHTML = `
-        <img src="${person.photoUrl}" alt="${person.fullName}">
+        <img src="${person.photoUrl}" alt="${person.fullName}" referrerpolicy="no-referrer">
         <h3>${person.fullName}</h3>
         <p>Rok urodzenia: ${person.birthDate.split("-")[0]}</p>
         <p>Rok śmierci: ${person.deathDate.split("-")[0]}</p>
