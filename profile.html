@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Profil osoby</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="profile-container">
+    <h1 id="profile-name">Ładowanie...</h1>
+    <img id="profile-photo" src="" alt="Zdjęcie" />
+    <p><strong>ID grobu:</strong> <span id="profile-id"></span></p>
+    <p><strong>Data urodzenia:</strong> <span id="profile-birth"></span></p>
+    <p><strong>Data śmierci:</strong> <span id="profile-death"></span></p>
+    <p><strong>Wiek:</strong> <span id="profile-age"></span> lat</p>
+    <p id="profile-description"></p>
+    <a href="index.html">← Powrót</a>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyChVtFHlA4mDuwx-xi7jLGMWvNYcNrrANM",
+      authDomain: "cmentarz-dabrowki.firebaseapp.com",
+      projectId: "cmentarz-dabrowki",
+      storageBucket: "cmentarz-dabrowki.appspot.com",
+      messagingSenderId: "502809191219",
+      appId: "1:502809191219:web:9526a28823974e90c91446",
+      measurementId: "G-GEDTJPLZ87"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Helper to get query param
+    const params = new URLSearchParams(window.location.search);
+    const personId = params.get("id");
+
+    if (personId) {
+      const docRef = doc(db, "zmarli", personId);
+      getDoc(docRef).then(docSnap => {
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          document.getElementById("profile-name").textContent = data.fullName;
+          document.getElementById("profile-photo").src = data.photoURL;
+          document.getElementById("profile-id").textContent = data.id;
+          document.getElementById("profile-birth").textContent = data.birthDate;
+          document.getElementById("profile-death").textContent = data.deathDate;
+          document.getElementById("profile-age").textContent = data.age;
+          document.getElementById("profile-description").textContent = data.description;
+        } else {
+          document.getElementById("profile-name").textContent = "Nie znaleziono profilu.";
+        }
+      });
+    } else {
+      document.getElementById("profile-name").textContent = "Brak ID profilu w adresie URL.";
+    }
+  </script>
+</body>
+</html>

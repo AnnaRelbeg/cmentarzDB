@@ -219,46 +219,17 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
         <h3>${person.fullName}</h3>
         <p><strong>Data urodzenia:</strong> ${person.birthDate}</p>
         <p><strong>Data śmierci:</strong> ${person.deathDate}</p>
-        <button class="view-profile-btn" data-id="${person.id}">Zobacz profil</button>
+        <a class="profile-link-btn" href="profile.html?id=${person.id}" target="_blank">Zobacz profil</a>
       </div>
     `;
 
     container.appendChild(card);
   });
 
-  document.querySelectorAll(".view-profile-btn").forEach(button => {
-  button.addEventListener("click", () => {
-    const selectedId = button.dataset.id;
-    console.log("🔍 Clicked button for ID:", selectedId);
-
-    const person = results.find(p => p.id === selectedId);
-    if (person) {
-      console.log("✅ Found person:", person);
-      openModal(person);
-    } else {
-      console.warn("❌ Person not found for ID:", selectedId);
-    }
-  });
-});
 
 
 }
 
-function openModal(person) {
-  document.getElementById("modal-photo").src = person.photoURL;
-  document.getElementById("modal-name").textContent = person.fullName;
-  document.getElementById("modal-id").textContent = person.id;
-  document.getElementById("modal-birth").textContent = person.birthDate;
-  document.getElementById("modal-death").textContent = person.deathDate;
-  document.getElementById("modal-age").textContent = person.age;
-  document.getElementById("modal-description").textContent = person.description;
-
-  document.getElementById("person-modal").classList.add("show");
-}
-
-function closeModal() {
-  document.getElementById("person-modal").classList.remove("show");
-}
 
 document.addEventListener("DOMContentLoaded", () => {
   const closeBtn = document.querySelector(".modal-close");
