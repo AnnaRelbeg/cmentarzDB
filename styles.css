@@ -320,7 +320,7 @@ footer {
 #profile-container {
   max-width: 600px;
   margin: 3rem auto;
-  background-color: #fff;
+  background-color: rgb(255, 255, 255,0.8);
   padding: 2rem;
   border-radius: 20px;
   box-shadow: 0 5px 20px rgba(0,0,0,0.1);
