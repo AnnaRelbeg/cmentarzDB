@@ -80,7 +80,10 @@
     <!-- Add more slides as needed -->
 </div>
 
-
+<audio autoplay loop muted controls>
+  <source src="assets/images/KevinMacLeod.mp3" type="audio/mpeg">
+  Twoja przeglądarka nie obsługuje audio.
+</audio>
 
   <div id="profile-container">
     <h1 id="profile-name">Ładowanie...</h1>
@@ -105,6 +108,30 @@
       </div>      
     <a class="back-button" href="index.html">← Powrót</a>
   </div>
+  <!-- Lightbox -->
+<div class="image-lightbox" id="lightbox">
+  <img id="lightbox-img" src="" alt="Pełne zdjęcie" />
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const lightbox = document.getElementById("lightbox");
+    const lightboxImg = document.getElementById("lightbox-img");
+
+    document.getElementById("profile-gallery").addEventListener("click", (e) => {
+      if (e.target.tagName === "IMG") {
+        lightbox.style.display = "flex";
+        lightboxImg.src = e.target.src;
+      }
+    });
+
+    lightbox.addEventListener("click", () => {
+      lightbox.style.display = "none";
+      lightboxImg.src = "";
+    });
+  });
+</script>
+
   <script>// Slideshow
     let slideIndex = 0;
     function showSlides() {

@@ -358,28 +358,46 @@ footer {
 
 .profileSwiper {
   width: 100%;
-  max-width: 600px;
-  aspect-ratio: 4 / 3; /* Maintain a good proportion */
-  margin: 2rem auto;
-  background: #fff;
-  border-radius: 16px;
+  max-width: 700px;
+  height: 450px;
+  margin: 2rem auto 1rem auto;
+  border-radius: 10px;
   overflow: hidden;
-  position: relative;
-}
-
-.profileSwiper .swiper-slide {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .profileSwiper .swiper-slide img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* fill the container cleanly */
-  border-radius: 0; /* already inside a rounded swiper */
+  object-fit: cover;
+  cursor: zoom-in;
+  border-radius: 16px;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  color: white;
+}
+
+
+/* Lightbox Modal */
+.image-lightbox {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0; top: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.85);
+  justify-content: center;
+  align-items: center;
+  cursor: zoom-out;
+}
+
+.image-lightbox img {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 12px;
 }
 
 @media (max-width: 600px) {
