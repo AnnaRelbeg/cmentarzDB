@@ -59,19 +59,21 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
     <div class="swiper-slide">
       <img src="assets/images/cmDB.JPG" alt="Cemetery 1" />
     </div>
-    <!-- Video Slide -->
-    <div class="swiper-slide">
-      <video autoplay muted loop playsinline>
-        <source src="assets/images/CMVid.mp4" type="video/mp4" />
-        Twoja przeglądarka nie obsługuje wideo.
-      </video>
-    </div>
-    <div class="swiper-slide">
-      <video autoplay muted loop playsinline>
-        <source src="assets/images/DB_Park.mp4" type="video/mp4" />
-        Twoja przeglądarka nie obsługuje wideo.
-      </video>
-    </div>
+<!-- YouTube Slide -->
+<div class="swiper-slide">
+  <div class="video-container">
+    <iframe
+      src="https://www.youtube.com/embed/r9eu7Ca0IEo?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&loop=0&enablejsapi=1"
+      frameborder="0"
+      allow="autoplay; encrypted-media"
+      allowfullscreen
+      id="youtube-slide"
+    ></iframe>
+  </div>
+</div>
+
+
+
   </div>
 
   <!-- Arrows and Dots -->
@@ -131,7 +133,7 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const swiper = new Swiper(".mySwiper", {
-      loop: true,
+      loop: false, // important — don’t auto-slide
       grabCursor: true,
       pagination: {
         el: ".swiper-pagination",
@@ -143,37 +145,32 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
       },
       slidesPerView: 1,
       spaceBetween: 20,
-      autoplay: false, // We will control it manually
     });
 
-    function handleVideoSlide(swiper) {
-      const currentSlide = swiper.slides[swiper.activeIndex];
-      const video = currentSlide.querySelector("video");
-
-      if (video) {
-        video.currentTime = 0;
-        video.play();
-
-        video.onended = () => {
-          swiper.slideNext();
-        };
-      } else {
-        // If it's not a video, just go to next slide after delay
-        setTimeout(() => {
-          swiper.slideNext();
-        }, 5000); // adjust timing as needed
-      }
+    let player;
+    function onYouTubeIframeAPIReady() {
+      player = new YT.Player('youtube-slide', {
+        events: {
+          'onReady': function (event) {
+            event.target.playVideo();
+          },
+          'onStateChange': function (event) {
+            if (event.data === YT.PlayerState.ENDED) {
+              swiper.slideNext();
+            }
+          }
+        }
+      });
     }
 
-    // Initial load
-    handleVideoSlide(swiper);
-
-    // When slide changes (e.g. user manually navigates)
-    swiper.on("slideChange", () => {
-      handleVideoSlide(swiper);
-    });
+    // Load YouTube Iframe API
+    const tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.body.appendChild(tag);
+    window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
   });
 </script>
+
 <script type="module" src="script.js"></script>
 </body>
 </html>
