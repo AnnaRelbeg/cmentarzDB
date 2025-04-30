@@ -91,9 +91,14 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
 <section id="gallery" data-aos="fade-up" data-aos-delay="300">
   <h2>Galeria zdjęć</h2>
   <div class="gallery-container">
+    <button id="prev-btn" class="gallery-nav-btn">‹</button>
+    
     <div class="main-image">
       <img id="current-image" src="assets/images/cmDB.JPG" alt="Główne zdjęcie" />
     </div>
+  
+    <button id="next-btn" class="gallery-nav-btn">›</button>
+  
     <div class="thumbnails">
       <img src="assets/images/cm1.JPG" alt="miniatura 1" class="thumb active" />
       <img src="assets/images/cm2.JPG" alt="miniatura 2" class="thumb" />
@@ -103,7 +108,7 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
       <img src="assets/images/cm6.JPG" alt="miniatura 6" class="thumb" />
       <img src="assets/images/cm7.JPG" alt="miniatura 7" class="thumb" />
     </div>
-  </div>
+  </div>  
 </section>
 
 
@@ -222,20 +227,40 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
 <!-- GALLERY -->
 
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const mainImage = document.getElementById("current-image");
-    const thumbnails = document.querySelectorAll(".thumb");
+document.addEventListener("DOMContentLoaded", () => {
+  const mainImage = document.getElementById("current-image");
+  const thumbnails = document.querySelectorAll(".thumb");
+  const prevBtn = document.getElementById("prev-btn");
+  const nextBtn = document.getElementById("next-btn");
 
-    thumbnails.forEach(thumb => {
-      thumb.addEventListener("click", () => {
-        thumbnails.forEach(t => t.classList.remove("active"));
-        thumb.classList.add("active");
-        mainImage.src = thumb.src;
-        mainImage.style.opacity = 0.6;
-        setTimeout(() => mainImage.style.opacity = 1, 200);
-      });
+  let currentIndex = 0;
+
+  function showImage(index) {
+    thumbnails.forEach(t => t.classList.remove("active"));
+    thumbnails[index].classList.add("active");
+    mainImage.src = thumbnails[index].src;
+    mainImage.style.opacity = 0.6;
+    setTimeout(() => (mainImage.style.opacity = 1), 200);
+  }
+
+  thumbnails.forEach((thumb, i) => {
+    thumb.addEventListener("click", () => {
+      currentIndex = i;
+      showImage(currentIndex);
     });
   });
+
+  prevBtn.addEventListener("click", () => {
+    currentIndex = (currentIndex - 1 + thumbnails.length) % thumbnails.length;
+    showImage(currentIndex);
+  });
+
+  nextBtn.addEventListener("click", () => {
+    currentIndex = (currentIndex + 1) % thumbnails.length;
+    showImage(currentIndex);
+  });
+});
+
 </script>
 
 
