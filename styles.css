@@ -116,11 +116,29 @@ nav a:hover {
   }
 }
   
-section {
-  padding: 2rem 1rem;
-  width: 100%;
-  box-sizing: border-box;
+.section {
+  padding: 30px 20px;
+  background: rgba(255,255,255,0.9);
+  color: #333;
+  max-width: 1100px;
+  margin: 30px auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
+.section .container {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+#zasluzeni {
+  background: url('assets/images/zasl_back.jpeg') no-repeat center center;
+  background-size: cover;
+  background-attachment: fixed;
+  color: white; /* optional: make text readable on dark images */
+  padding: 4rem 1rem;
+}
+
 
 
 /* RESULTS CONTAINER */
@@ -237,71 +255,24 @@ section {
   }
 }
 
-
-/*---------------------
-  SLIDE SHOW 
-  ----------------------*/
-
-  /* Swiper slideshow custom styles */
-  .swiper {
-    width: 100%;
-    max-width: 900px;
-    height: auto;
-    aspect-ratio: 16 / 9;
-    margin: 2rem auto;
-    border-radius: 12px;
-    overflow: hidden;
-  }
-  
-  .swiper-slide img,
-  .swiper-slide video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-  
-  .video-container {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    overflow: hidden;
-  }
-  
-  .video-container iframe {
-    position: absolute;
-    top: -10%;
-    left: 0;
-    width: 100%;
-    height: 120%;
-    border: 0;
-    object-fit: cover;
-    pointer-events: none; /* disables interaction */
-  }
-  
-  .video-container iframe {
-  opacity: 0;
-  animation: fadeIn 2s ease forwards;
+.about-video-wrapper {
+  margin-top: 2rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 
-@keyframes fadeIn {
-  to {
-    opacity: 1;
-  }
+.about-video {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  border-radius: 12px;
 }
 
-  
-  /* Mobile tweaks */
-  @media (max-width: 480px) {
-    .swiper {
-      aspect-ratio: 4 / 3;
-    }
-  
-    .video-container {
-      aspect-ratio: 4 / 3;
-    }
-  }
-   
 
 footer {
   background-color: #eaeaea;
@@ -388,32 +359,35 @@ footer {
 .profileSwiper {
   width: 100%;
   max-width: 600px;
-  height: 600px; /* ⬅️ Make it tall relative to viewport */
+  aspect-ratio: 4 / 3; /* Maintain a good proportion */
   margin: 2rem auto;
   background: #fff;
   border-radius: 16px;
   overflow: hidden;
   position: relative;
+}
+
+.profileSwiper .swiper-slide {
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-
 .profileSwiper .swiper-slide img {
-  width: auto;
+  width: 100%;
   height: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  border-radius: 12px;
+  object-fit: cover; /* fill the container cleanly */
+  border-radius: 0; /* already inside a rounded swiper */
 }
 
-
-@media (max-width: 768px) {
+@media (max-width: 600px) {
   .profileSwiper {
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 3 / 4;
   }
 }
+
 
 @media (max-width: 600px) {
   .swiper-button-next,

@@ -48,50 +48,21 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
     </div>
   </header>
 
-  <section id="about">
+  <section id="about" class="section about">
     <h2 data-aos="fade-up" data-aos-delay="300">O Cmentarzu</h2>
     <p data-aos="fade-up" data-aos-delay="300">
         Cmentarz Parafialny p.w. Przemienienia Pańskiego w Dąbrówkach Breńskich to miejsce zadumy, modlitwy i wspomnień. 
-        Spoczywają tu mieszkańcy naszej wsi i okolicznych miejscowości – ci, którzy budowali wspólnotę, przekazywali wartości i wiernie kroczyli przez życie.Dzięki tej stronie możesz łatwo odszukać groby bliskich, przejrzeć archiwa i podzielić się wspomnieniami.
+        Spoczywają tu mieszkańcy naszej wsi i okolicznych miejscowości – ci, którzy budowali wspólnotę, przekazywali wartości i wiernie kroczyli przez życie. Dzięki tej stronie możesz łatwo odszukać groby bliskich, przejrzeć archiwa i podzielić się wspomnieniami.
     </p>
-<!-- Swiper -->
-<div class="swiper mySwiper" data-aos="fade-up" data-aos-delay="300">
-  <div class="swiper-wrapper">
-<!-- YouTube Slide -->
-<!-- First YouTube Slide -->
-<div class="swiper-slide">
-  <div class="video-container">
-    <iframe
-  src="https://www.youtube.com/embed/r9eu7Ca0IEo?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&playlist=r9eu7Ca0IEo&loop=1&enablejsapi=1"
-  frameborder="0"
-  allow="autoplay; encrypted-media"
-  allowfullscreen
-  loading="lazy"
-></iframe>
+    <div class="about-video-wrapper" data-aos="fade-up" data-aos-delay="400">
+      <video class="about-video" autoplay muted loop playsinline>
+        <source src="assets/images/VidCM1.mp4" type="video/mp4" />
+        Twoja przeglądarka nie obsługuje odtwarzacza wideo.
+      </video>
+    </div>
+  </section>
 
-  </div>
-</div>
-<!-- Second YouTube Slide -->
-<div class="swiper-slide">
-  <div class="video-container">
-    <iframe
-      src="https://www.youtube.com/embed/dIVJX_QRFAA?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&playlist=dIVJX_QRFAA&loop=1&enablejsapi=1"
-      frameborder="0"
-      allow="autoplay; encrypted-media"
-      allowfullscreen
-      loading="lazy"
-    ></iframe>
-  </div>
-</div>
-
-  <!-- Arrows and Dots -->
-  <div class="swiper-button-next"></div>
-  <div class="swiper-button-prev"></div>
-  <div class="swiper-pagination"></div>
-</div>
-</section>
-
-<section id="gallery" data-aos="fade-up" data-aos-delay="300">
+<section id="gallery" data-aos="fade-up" data-aos-delay="300" class="section gallery">
   <h2>Galeria zdjęć</h2>
   <div class="gallery-container">
     <button id="prev-btn" class="gallery-nav-btn">‹</button>
@@ -134,8 +105,7 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
   </div>
 </section>
 
-
-  <section id="contact" data-aos="fade-up" data-aos-delay="300">
+  <section id="contact" data-aos="fade-up" data-aos-delay="300" class="section contact">
     <h2 data-aos="fade-up" data-aos-delay="300">Kontakt</h2>
     <p data-aos="fade-up" data-aos-delay="300">
       Masz pytania lub chcesz zgłosić poprawki? Skontaktuj się z nami pod adresem: <br/>
@@ -156,76 +126,7 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
       once: true
     });
   </script>
-  
-<!-- Swiper JS -->
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
-<script>
-  let swiper;
-  let players = [];
-
-  document.addEventListener("DOMContentLoaded", function () {
-    swiper = new Swiper(".mySwiper", {
-      loop: false,
-      grabCursor: true,
-      slidesPerView: 1,
-      spaceBetween: 20,
-      pagination: {
-        el: ".swiper-pagination",
-        clickable: true,
-      },
-      navigation: {
-        nextEl: ".swiper-button-next",
-        prevEl: ".swiper-button-prev",
-      },
-    });
-  });
-
-  function onYouTubeIframeAPIReady() {
-    const iframes = document.querySelectorAll(".swiper-slide iframe");
-
-    iframes.forEach((iframe, index) => {
-      const player = new YT.Player(iframe, {
-        events: {
-          onReady: (event) => {
-            // Optional: play the first video automatically
-            if (index === swiper.activeIndex) {
-              event.target.playVideo();
-            }
-          },
-          onStateChange: (event) => {
-            if (event.data === YT.PlayerState.PLAYING) {
-              swiper.autoplay?.stop?.();
-            }
-            if (event.data === YT.PlayerState.ENDED) {
-              swiper.slideNext();
-            }
-          },
-        },
-      });
-      players.push(player);
-    });
-
-    swiper.on("slideChange", () => {
-      players.forEach((p, i) => {
-        if (i === swiper.activeIndex) {
-          try {
-            p.playVideo();
-          } catch (e) {}
-        } else {
-          try {
-            p.pauseVideo();
-          } catch (e) {}
-        }
-      });
-    });
-  }
-
-  // Load YouTube Iframe API
-  const tag = document.createElement("script");
-  tag.src = "https://www.youtube.com/iframe_api";
-  document.body.appendChild(tag);
-</script>
 
 <!-- GALLERY -->
 
