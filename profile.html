@@ -54,7 +54,6 @@
         if (docSnap.exists()) {
           const data = docSnap.data();
           document.getElementById("profile-name").textContent = data.fullName;
-          document.getElementById("profile-photo").src = data.photoURL;
           document.getElementById("profile-id").textContent = data.id;
           document.getElementById("profile-birth").textContent = data.birthDate;
           document.getElementById("profile-death").textContent = data.deathDate;
@@ -70,12 +69,24 @@
 
     const galleryContainer = document.getElementById("profile-gallery");
 
-person.photoGallery.forEach((url) => {
-  const slide = document.createElement("div");
-  slide.classList.add("swiper-slide");
-  slide.innerHTML = `<img src="${url}" alt="${person.fullName}" />`;
-  galleryContainer.appendChild(slide);
-});
+    if (data.photoGallery?.length) {
+  data.photoGallery.forEach((url) => {
+    const slide = document.createElement("div");
+    slide.classList.add("swiper-slide");
+    slide.innerHTML = `<img src="${url}" alt="${data.fullName}" />`;
+    galleryContainer.appendChild(slide);
+  });
+
+  new Swiper(".profileSwiper", {
+    loop: true,
+    pagination: { el: ".swiper-pagination", clickable: true },
+    navigation: {
+      nextEl: ".swiper-button-next",
+      prevEl: ".swiper-button-prev",
+    },
+  });
+}
+
 
 new Swiper(".profileSwiper", {
   loop: true,
