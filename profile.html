@@ -197,38 +197,6 @@
     } else {
       document.getElementById("profile-name").textContent = "Brak ID profilu w adresie URL.";
     }
-
-    import { getFirestore, doc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-
-const memoryInput = document.getElementById("memory-input");
-const submitButton = document.getElementById("submit-memory");
-const memoryStatus = document.getElementById("memory-status");
-
-submitButton.addEventListener("click", async () => {
-  const newMemory = memoryInput.value.trim();
-  if (!newMemory) {
-    memoryStatus.textContent = "Wspomnienie nie może być puste.";
-    return;
-  }
-
-  submitButton.disabled = true;
-  memoryStatus.textContent = "Wysyłanie...";
-
-  try {
-    const ref = doc(db, "zmarli", personId);
-    await updateDoc(ref, {
-      memorySubmissions: arrayUnion(newMemory)
-    });
-    memoryStatus.textContent = "Dziękujemy za dodanie wspomnienia!";
-    memoryInput.value = "";
-  } catch (err) {
-    console.error("Błąd podczas wysyłania wspomnienia:", err);
-    memoryStatus.textContent = "Wystąpił błąd. Spróbuj ponownie.";
-  } finally {
-    submitButton.disabled = false;
-  }
-});
-
   </script>
 </body>
 </html>
