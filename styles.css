@@ -150,6 +150,26 @@ nav a:hover {
   }
 }
 
+.contact {
+  background: url('assets/images/contact2.jpeg') no-repeat center center;
+  background-size: cover;
+  background-attachment: fixed;
+  color: white; /* optional: make text readable on dark images */
+  padding: 4rem 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.contact a {
+  all: unset;
+}
+
+@media (max-width: 768px) {
+  .contact {
+    background-attachment: scroll; /* disables fixed background on mobile */
+    background-position: 57% center;
+  }
+}
 
 /* RESULTS CONTAINER */
 
