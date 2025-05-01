@@ -49,7 +49,30 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
     </div>
   </header>
 
-  <section id="about" class="section about">
+  <audio id="background-music" loop>
+    <source src="assets/images/KevinMacLeod.mp3" type="audio/mpeg">
+    Twoja przeglądarka nie obsługuje audio.
+  </audio>
+  
+  <!-- Play button -->
+  <button id="play-music-btn" style="
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #6a8b5f;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.2rem;
+    font-size: 1rem;
+    border-radius: 12px;
+    cursor: pointer;
+    z-index: 1000;
+  ">
+    🎵 Włącz muzykę
+  </button>
+
+
+  <section id="about" class="section about" data-aos="fade-up" data-aos-delay="300">
     <h2 data-aos="fade-up" data-aos-delay="300">O Cmentarzu</h2>
     <p data-aos="fade-up" data-aos-delay="300">
         Cmentarz Parafialny p.w. Przemienienia Pańskiego w Dąbrówkach Breńskich to miejsce zadumy, modlitwy i wspomnień. 
@@ -59,7 +82,7 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
 
 <section id="gallery" data-aos="fade-up" data-aos-delay="300" class="section gallery">
   <h2>Galeria zdjęć</h2>
-  <div class="gallery-container">
+  <div class="gallery-container" data-aos="fade-up" data-aos-delay="300">
     <button id="prev-btn" class="gallery-nav-btn">‹</button>
     
     <div class="main-image">
@@ -128,6 +151,13 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
     });
   </script>
 
+<script>
+  document.getElementById('play-music-btn').addEventListener('click', () => {
+    const audio = document.getElementById('background-music');
+    audio.play();
+    document.getElementById('play-music-btn').style.display = 'none';
+  });
+</script>
 
 <!-- GALLERY -->
 
