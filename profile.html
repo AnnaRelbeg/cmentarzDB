@@ -122,7 +122,26 @@
         <p id="profile-memory-text">Brak wspomnienia.</p>
         <p id="memory-success" style="color: green; display: none; margin-top: 1rem;">Dziękujemy za dodanie wspomnienia!</p>
         
-      </div>      
+      </div>
+      <div id="photo-upload" style="margin-top: 2.5rem; text-align: left;">
+        <h2>Dodaj zdjęcie</h2>
+        <p style="margin-bottom: 0.5rem;">Jeśli posiadasz zdjęcie tej osoby, możesz je przesłać tutaj:</p>
+        <form id="upload-form">
+          <input type="file" id="photo-file" accept="image/*" style="margin-bottom: 1rem;" required />
+          <br />
+          <button type="submit" style="
+            background-color: #6a8b5f;
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+          ">Prześlij zdjęcie</button>
+          <p id="upload-placeholder-msg" style="margin-top: 1rem; color: #999;">(Ten formularz nie jest jeszcze połączony z bazą danych.)</p>
+        </form>
+      </div>
+            
     <a class="back-button" href="index.html">← Powrót</a>
   </div>
   <!-- Lightbox -->
