@@ -123,12 +123,28 @@
         <p id="memory-success" style="color: green; display: none; margin-top: 1rem;">Dziękujemy za dodanie wspomnienia!</p>
         
       </div>
-      <div id="photo-upload" style="margin-top: 2.5rem; text-align: left;">
-        <h2>Dodaj zdjęcie</h2>
-        <p style="margin-bottom: 0.5rem;">Jeśli posiadasz zdjęcie tej osoby, możesz je przesłać tutaj:</p>
+      <div id="photo-upload" style="margin-top: 2.5rem; text-align: center;">
+        <h2 style="margin-bottom: 0.5rem;">Dodaj zdjęcie</h2>
+        <p style="margin-bottom: 1rem;">Jeśli posiadasz zdjęcie tej osoby, możesz je przesłać tutaj:</p>
         <form id="upload-form">
-          <input type="file" id="photo-file" accept="image/*" style="margin-bottom: 1rem;" required />
+          <!-- Hidden native input -->
+          <input type="file" id="photo-file" accept="image/*" required style="display: none;" />
+          
+          <!-- Styled label acting as button -->
+          <label for="photo-file" style="
+            display: inline-block;
+            background-color: #9fb89d;
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 1rem;
+          ">📷 Wybierz zdjęcie</label>
+      
           <br />
+      
+          <!-- Submit button -->
           <button type="submit" style="
             background-color: #6a8b5f;
             color: white;
@@ -138,9 +154,13 @@
             font-weight: bold;
             cursor: pointer;
           ">Prześlij zdjęcie</button>
-          <p id="upload-placeholder-msg" style="margin-top: 1rem; color: #999;"></p>
+      
+          <p id="upload-placeholder-msg" style="margin-top: 1rem; color: #999;">
+          </p>
         </form>
       </div>
+      
+      
             
     <a class="back-button" href="index.html">← Powrót</a>
   </div>
