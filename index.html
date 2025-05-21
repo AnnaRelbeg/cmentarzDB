@@ -202,7 +202,11 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
   const resultsContainer = document.getElementById("results-container");
 
   searchInput.addEventListener("input", async () => {
-    const query = searchInput.value.trim().toLowerCase();
+    const normalize = (str) =>
+      str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+    const query = normalize(searchInput.value.trim());
+
     if (!query) return (resultsContainer.innerHTML = "");
 
     const snapshot = await getDocs(collection(db, "zmarli"));
@@ -210,12 +214,13 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
 
     snapshot.forEach((doc) => {
   const data = doc.data();
-  const nameTokens = data.fullName?.toLowerCase().split(" ") || [];
-  const queryTokens = query.split(" ");
+  const nameTokens = normalize(data.fullName || "").split(" ");
+const queryTokens = query.split(" ");
 
-  const nameMatches = queryTokens.every(token =>
-    nameTokens.some(namePart => namePart.startsWith(token))
-  );
+const nameMatches = queryTokens.every(token =>
+  nameTokens.some(namePart => namePart.startsWith(token))
+);
+
 
   if (nameMatches || data.id?.toLowerCase().includes(query)) {
     results.push(data);
