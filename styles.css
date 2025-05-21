@@ -717,7 +717,7 @@ CANDLES
 }
 
 #light-candle-btn:hover {
-  background-color: #d88a45;
+  background-color: black;
 }
 
 #candle-display {
@@ -747,4 +747,10 @@ CANDLES
   max-width: 500px;
   margin-left: auto;
   margin-right: auto;
+}
+
+#memory-list div {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
 }

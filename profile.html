@@ -120,8 +120,8 @@
     <p><strong>Wiek:</strong> <span id="profile-age"></span> lat</p>
     <p id="profile-description"></p>
     <div id="profile-memory">
-        <h2>Wspomnienie</h2>
-        <p id="profile-memory-text">Brak wspomnienia.</p>
+        <h2>Wspomnienia i modlitwy</h2>
+        <p id="profile-memory-text"></p>
         <p id="memory-success" style="color: green; display: none; margin-top: 1rem;">Dziękujemy za dodanie wspomnienia!</p>
         
     </div>
@@ -283,7 +283,7 @@
               box.style.backgroundColor = "#ffffffcc";
               box.style.position = "relative";
               box.innerHTML = `
-                <p style="margin: 0 0 0.5rem;"><strong>Wspomnienie:</strong></p>
+                <p style="margin: 0 0 0.5rem;"><strong>Wspomnienia i modlitwy:</strong></p>
                 <p style="margin: 0;">${mem.text}</p>
                 <button class="report-btn" data-index="${index}" style="
                   position: absolute;
