@@ -330,6 +330,45 @@
     } else {
       document.getElementById("profile-name").textContent = "Brak ID profilu w adresie URL.";
     }
+
+        // Candle lighting
+        const lightCandleBtn = document.getElementById("light-candle-btn");
+    const candleDisplay = document.getElementById("candle-display");
+    let candles = data.candles || [];
+
+    function renderCandles(candlesList) {
+      candleDisplay.innerHTML = "";
+      const now = new Date();
+      const recent = candlesList
+        .filter(c => new Date(c.timestamp) > new Date(now - 7 * 24 * 60 * 60 * 1000))
+        .slice(-10);
+      recent.forEach(() => {
+        const candle = document.createElement("img");
+        candle.src = "assets/images/candle.png";
+        candle.alt = "Znicz";
+        candle.style.width = "40px";
+        candle.style.height = "60px";
+        candle.style.objectFit = "contain";
+        candleDisplay.appendChild(candle);
+      });
+    }
+
+    renderCandles(candles);
+
+    lightCandleBtn.addEventListener("click", async () => {
+      const newCandle = { timestamp: new Date().toISOString() };
+      candles.push(newCandle);
+      candles = candles
+        .filter(c => new Date(c.timestamp) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000))
+        .slice(-10);
+      try {
+        await updateDoc(docRef, { candles });
+        renderCandles(candles);
+      } catch (error) {
+        alert("Błąd zapalania znicza.");
+        console.error(error);
+      }
+    });
   </script>
   
   
