@@ -85,8 +85,6 @@
   Twoja przeglądarka nie obsługuje audio.
 </audio>
 
-/*candle for a week */ 
-
 <!-- Play button -->
 <button id="play-music-btn" style="
   position: fixed;
@@ -124,7 +122,23 @@
         <p id="profile-memory-text">Brak wspomnienia.</p>
         <p id="memory-success" style="color: green; display: none; margin-top: 1rem;">Dziękujemy za dodanie wspomnienia!</p>
         
-      </div>
+    </div>
+    <div id="candles-section" style="margin-top: 2rem; text-align: center;">
+      <h2>Zapal znicz</h2>
+      <button id="light-candle-btn" style="
+        background-color: #f4a261;
+        color: white;
+        padding: 0.6rem 1.4rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+      ">
+        🕯️ Zapal znicz
+      </button>
+      <div id="candle-display" style="margin-top: 1.5rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;"></div>
+    </div>
+    
       <div id="photo-upload" style="margin-top: 2.5rem; text-align: center;">
         <h2 style="margin-bottom: 0.5rem;">Dodaj zdjęcie</h2>
         <p style="margin-bottom: 1rem;">Jeśli posiadasz zdjęcie tej osoby, możesz je przesłać tutaj:</p>
@@ -241,6 +255,7 @@
   
           document.getElementById("profile-name").textContent = data.fullName;
           document.getElementById("profile-id").textContent = data.id;
+          document.getElementById("profile-location").textContent = data.location
           document.getElementById("profile-birth").textContent = data.birthDate;
           document.getElementById("profile-death").textContent = data.deathDate;
           document.getElementById("profile-age").textContent = data.age;
@@ -304,6 +319,48 @@
               console.error(error);
             }
           });
+
+          // 🔥 Candle lighting feature
+const lightCandleBtn = document.getElementById("light-candle-btn");
+const candleDisplay = document.getElementById("candle-display");
+
+function renderCandles(candles) {
+  candleDisplay.innerHTML = "";
+  const now = new Date();
+  const recentCandles = candles
+    .filter(c => new Date(c.timestamp) > new Date(now - 7 * 24 * 60 * 60 * 1000))
+    .slice(-10);
+
+  recentCandles.forEach(() => {
+    const candle = document.createElement("img");
+    candle.src = "assets/images/candle.png"; // make sure this file exists
+    candle.alt = "Znicz";
+    candle.style.width = "40px";
+    candle.style.height = "60px";
+    candle.style.objectFit = "contain";
+    candleDisplay.appendChild(candle);
+  });
+}
+
+let candles = data.candles || [];
+renderCandles(candles);
+
+lightCandleBtn.addEventListener("click", async () => {
+  const newCandle = { timestamp: new Date().toISOString() };
+  candles.push(newCandle);
+  candles = candles
+    .filter(c => new Date(c.timestamp) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000))
+    .slice(-10);
+
+  try {
+    await updateDoc(docRef, { candles });
+    renderCandles(candles);
+  } catch (error) {
+    alert("Wystąpił błąd podczas zapalania znicza.");
+    console.error(error);
+  }
+});
+
   
         } else {
           document.getElementById("profile-name").textContent = "Nie znaleziono profilu.";
