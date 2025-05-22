@@ -85,19 +85,18 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
   <section id="gallery" data-aos="fade-up" data-aos-delay="300" class="section gallery">
     <h2>Galeria zdjęć</h2>
     <div class="gallery-container" data-aos="fade-up" data-aos-delay="300">
+      <img src="assets/images/brama.JPG" alt="Zdjecie 0">
+      <img src="assets/images/aniol.jpg" alt="Aniol">
+      <img src="assets/images/plac.jpg" alt="Plac">
       <img src="assets/images/cm1.JPG" alt="Zdjęcie 1">
       <img src="assets/images/cm2.JPG" alt="Zdjęcie 2">
       <img src="assets/images/cm3.JPG" alt="Zdjęcie 3">
       <img src="assets/images/cm4.JPG" alt="Zdjęcie 4">
       <img src="assets/images/cm5.JPG" alt="Zdjęcie 5">
       <img src="assets/images/cm6.JPG" alt="Zdjęcie 6">
-      <img src="assets/images/cm7.JPG" alt="Zdjęcie 7">
     </div>
   </section>
   
-
-
-
 <section id="zasluzeni" class="section zasluzeni">
   <h2>Zasłużeni</h2>
 
@@ -129,11 +128,6 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
     &copy; 2025 Cmentarz Dąbrówki Breńskie. Wszelkie prawa zastrzeżone.
   </footer>
 
-  <!-- Modal Lightbox -->
-<div id="image-modal" class="image-modal">
-  <span class="close-modal">&times;</span>
-  <img class="modal-content" id="modal-image">
-</div>
 
   <!-- AOS Scripts -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
@@ -153,28 +147,44 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
 </script>
 
 <!-- GALLERY -->
-
 <script>
   document.addEventListener("DOMContentLoaded", () => {
-    const modal = document.getElementById("image-modal");
-    const modalImg = document.getElementById("modal-image");
-    const closeBtn = document.querySelector(".close-modal");
-    const galleryImages = document.querySelectorAll(".gallery-container img");
+    const lightbox = document.getElementById("lightbox");
+    const lightboxImg = document.getElementById("lightbox-img");
+    const galleryImages = Array.from(document.querySelectorAll(".gallery-container img"));
+    let currentIndex = 0;
 
-    galleryImages.forEach(img => {
-      img.addEventListener("click", () => {
-        modal.style.display = "flex";
-        modalImg.src = img.src;
-      });
+    document.getElementById("lightbox-close").addEventListener("click", (e) => {
+  e.stopPropagation();
+  document.getElementById("lightbox").style.display = "none";
+});
+
+
+    function showImage(index) {
+      currentIndex = index;
+      lightboxImg.src = galleryImages[currentIndex].src;
+      lightbox.style.display = "flex";
+    }
+
+    galleryImages.forEach((img, index) => {
+      img.addEventListener("click", () => showImage(index));
     });
 
-    closeBtn.addEventListener("click", () => {
-      modal.style.display = "none";
+    document.getElementById("lightbox-prev").addEventListener("click", (e) => {
+      e.stopPropagation();
+      currentIndex = (currentIndex - 1 + galleryImages.length) % galleryImages.length;
+      showImage(currentIndex);
     });
 
-    window.addEventListener("click", (e) => {
-      if (e.target === modal) {
-        modal.style.display = "none";
+    document.getElementById("lightbox-next").addEventListener("click", (e) => {
+      e.stopPropagation();
+      currentIndex = (currentIndex + 1) % galleryImages.length;
+      showImage(currentIndex);
+    });
+
+    lightbox.addEventListener("click", (e) => {
+      if (e.target === lightbox || e.target === lightboxImg) {
+        lightbox.style.display = "none";
       }
     });
   });
@@ -318,6 +328,15 @@ if (window.location.pathname.indexOf('index.html') > -1) {
     
     </script>
 <script src="script.js"></script>
+
+<!-- Lightbox -->
+<div class="image-lightbox" id="lightbox">
+  <button id="lightbox-close" class="lightbox-close-btn">&times;</button>
+  <button id="lightbox-prev" class="lightbox-nav">&#10094;</button>
+  <img id="lightbox-img" src="" alt="Pełne zdjęcie" />
+  <button id="lightbox-next" class="lightbox-nav">&#10095;</button>
+</div>
+
 
 </body>
 </html>
