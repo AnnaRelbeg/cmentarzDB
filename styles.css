@@ -417,10 +417,12 @@ footer {
 .profileSwiper .swiper-slide img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   cursor: zoom-in;
   border-radius: 16px;
+  background-color: #fff; /* Optional: adds a clean background */
 }
+
 
 .swiper-button-next,
 .swiper-button-prev {
@@ -754,3 +756,4 @@ CANDLES
   overflow-wrap: break-word;
   white-space: pre-wrap;
 }
+
