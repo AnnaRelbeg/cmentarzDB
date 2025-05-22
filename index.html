@@ -202,8 +202,22 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
   const resultsContainer = document.getElementById("results-container");
 
   searchInput.addEventListener("input", async () => {
-    const normalize = (str) =>
-      str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    const normalize = (str) => {
+  return str
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/ł/g, 'l')
+    .replace(/ś/g, 's')
+    .replace(/ź/g, 'z')
+    .replace(/ż/g, 'z')
+    .replace(/ć/g, 'c')
+    .replace(/ń/g, 'n')
+    .replace(/ę/g, 'e')
+    .replace(/ą/g, 'a')
+    .replace(/ó/g, 'o');
+};
+
 
     const query = normalize(searchInput.value.trim());
 
