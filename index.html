@@ -228,12 +228,11 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
 
     snapshot.forEach((doc) => {
   const data = doc.data();
-  const nameTokens = normalize(data.fullName || "").split(" ");
-const queryTokens = query.split(" ");
-
-const nameMatches = queryTokens.every(token =>
-  nameTokens.some(namePart => namePart.includes(token))
+  const fullNameNorm = normalize(data.fullName || "");
+const nameMatches = query.split(" ").every(token =>
+  fullNameNorm.includes(token)
 );
+
 
 
 
