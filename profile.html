@@ -122,8 +122,7 @@
     <div id="profile-memory">
       <h2>Wspomnienia i modlitwy</h2>
         <p id="profile-memory-text"></p>
-        <p id="memory-success" style="color: green; display: none; margin-top: 1rem;">Dziękujemy za dodanie wspomnienia!</p>
-        
+        <p id="memory-success" style="color: green; display: none; margin-top: 1rem;">Dziękujemy za dodanie wspomnienia!</p>  
     </div>
     <div id="candles-section" style="margin-top: 2rem; text-align: center;">
       <button id="light-candle-btn">
@@ -275,7 +274,9 @@
               box.style.backgroundColor = "#ffffffcc";
               box.style.position = "relative";
               box.innerHTML = `
-                <p style="margin: 0;">${mem.text}</p>
+                <p style="margin: 0;"><strong>Od:</strong> ${mem.from || "Nieznane"}</p>
+                <p style="margin-top: 0.5rem;">${mem.text}</p>
+
                 <button class="report-btn" data-index="${index}" style="
                   position: absolute;
                   top: 10px;
@@ -317,35 +318,57 @@
         renderMemories(data.memories || []);
     
         // 📝 Memory form setup
-        const memoryForm = document.createElement("form");
-        memoryForm.id = "memory-form";
-        memoryForm.style.marginTop = "1.5rem";
-        memoryForm.innerHTML = `
-          <textarea id="memory-input" rows="4" placeholder="Dodaj swoje wspomnienie..." required style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid #ccc;"></textarea>
-          <button type="submit" style="margin-top: 0.75rem; background-color: #6a8b5f; color: white; padding: 0.5rem 1rem; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">Zapisz wspomnienie</button>
-          <p id="memory-success" style="color: green; display: none; margin-top: 1rem;">Dziękujemy za dodanie wspomnienia!</p>
-        `;
-        document.getElementById("profile-memory").appendChild(memoryForm);
+// 📝 Memory form setup
+const memoryForm = document.createElement("form");
+memoryForm.id = "memory-form";
+memoryForm.style.marginTop = "1.5rem";
+
+memoryForm.innerHTML = `
+  <input id="memory-from" type="text" placeholder="Od kogo?" required 
+    style="width: 100%; margin-bottom: 0.5rem; padding: 0.6rem; border-radius: 8px; border: 1px solid #ccc;" />
+  <textarea id="memory-input" rows="4" placeholder="Dodaj swoje wspomnienie..." required 
+    style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid #ccc;"></textarea>
+  <button type="submit" style="margin-top: 0.75rem; background-color: #6a8b5f; color: white; 
+    padding: 0.5rem 1rem; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
+    Zapisz wspomnienie
+  </button>
+  <p id="memory-success" style="color: green; display: none; margin-top: 1rem;">
+    Dziękujemy za dodanie wspomnienia!
+  </p>
+`;
+
+document.getElementById("profile-memory").appendChild(memoryForm);
+
     
-        memoryForm.addEventListener("submit", async (e) => {
-          e.preventDefault();
-          const memoryInput = document.getElementById("memory-input");
-          const memoryText = memoryInput.value.trim();
-          if (!memoryText) return;
-    
-          try {
-            const newMemory = { text: memoryText, timestamp: new Date().toISOString(), reported: false };
-            const updatedMemories = [...(data.memories || []), newMemory];
-            await updateDoc(docRef, { memories: updatedMemories });
-            memoryInput.value = "";
-            document.getElementById("memory-success").style.display = "block";
-            data.memories = updatedMemories;
-            renderMemories(updatedMemories);
-          } catch (error) {
-            alert("Wystąpił błąd podczas zapisywania wspomnienia. Spróbuj ponownie.");
-            console.error(error);
-          }
-        });
+  memoryForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const memoryInput = document.getElementById("memory-input");
+  const memoryFrom = document.getElementById("memory-from");
+  const memoryText = memoryInput.value.trim();
+  const memoryAuthor = memoryFrom.value.trim();
+
+  if (!memoryText || !memoryAuthor) return;
+
+  try {
+    const newMemory = {
+      text: memoryText,
+      from: memoryAuthor, // use the already-trimmed value
+      timestamp: new Date().toISOString(),
+      reported: false
+    };
+    const updatedMemories = [...(data.memories || []), newMemory];
+    await updateDoc(docRef, { memories: updatedMemories });
+    memoryInput.value = "";
+    memoryFrom.value = ""; // reset author input too
+    document.getElementById("memory-success").style.display = "block";
+    data.memories = updatedMemories;
+    renderMemories(updatedMemories);
+  } catch (error) {
+    alert("Wystąpił błąd podczas zapisywania wspomnienia. Spróbuj ponownie.");
+    console.error(error);
+  }
+});
+
     
         // 🕯️ Candle logic
         const lightCandleBtn = document.getElementById("light-candle-btn");
