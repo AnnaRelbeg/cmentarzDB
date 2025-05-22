@@ -170,6 +170,44 @@
         </form>
       </div>
       
+      <div id="update-profile-section" style="margin-top: 2rem;">
+        <button id="show-update-form-btn" style="
+          background-color: #6a8b5f;
+          color: white;
+          padding: 0.5rem 1rem;
+          border: none;
+          border-radius: 8px;
+          font-weight: bold;
+          cursor: pointer;
+        ">
+          ✏️ Zgłoś aktualizację profilu
+        </button>
+      
+        <form id="update-form" style="margin-top: 1rem; display: none;">
+          <textarea id="update-message" rows="4" placeholder="Wpisz, co należy poprawić..." required style="
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+          "></textarea>
+          <button type="submit" style="
+            margin-top: 0.5rem;
+            background-color: #6a8b5f;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+          ">
+            Wyślij sugestię
+          </button>
+          <p id="update-success-msg" style="color: green; display: none; margin-top: 0.75rem;">
+            Dziękujemy! Sugestia została przesłana.
+          </p>
+        </form>
+      </div>
       
             
     <a class="back-button" href="index.html">← Powrót</a>
@@ -499,6 +537,37 @@ document.getElementById("upload-form").addEventListener("submit", async (e) => {
         }
       });
     }
+
+  // ✏️ Toggle update form visibility
+document.getElementById("show-update-form-btn").addEventListener("click", () => {
+  const form = document.getElementById("update-form");
+  form.style.display = form.style.display === "none" ? "block" : "none";
+});
+
+// 📩 Handle update message submission
+document.getElementById("update-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const message = document.getElementById("update-message").value.trim();
+  const successMsg = document.getElementById("update-success-msg");
+
+  if (!message) return;
+
+  try {
+    // Save as a new array entry
+    const updates = data.updateRequests || [];
+    updates.push({
+      message,
+      timestamp: new Date().toISOString()
+    });
+    await updateDoc(docRef, { updateRequests: updates });
+    document.getElementById("update-message").value = "";
+    successMsg.style.display = "block";
+  } catch (error) {
+    console.error("Błąd zgłaszania aktualizacji:", error);
+    alert("Wystąpił błąd podczas wysyłania sugestii.");
+  }
+});
+
   </script>
 
 </body>
