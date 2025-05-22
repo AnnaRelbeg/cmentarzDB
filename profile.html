@@ -433,40 +433,39 @@
   
         // 📸 Upload photo
         document.getElementById("upload-form").addEventListener("submit", async (e) => {
-          e.preventDefault();
-          const fileInput = document.getElementById("photo-file");
-          const file = fileInput.files[0];
-          if (!file) return;
-  
-          if ((data.photoGallery || []).length >= 4) {
-            alert("Można przesłać maksymalnie 4 zdjęcia.");
-            return;
-          }
-          
-           // 👇 Show the loading spinner *immediately*
-            loadingIndicator.style.display = "block";
+  e.preventDefault();
+  const fileInput = document.getElementById("photo-file");
+  const file = fileInput.files[0];
+  const loadingIndicator = document.getElementById("upload-loading"); // ✅ define this!
 
+  if (!file) return;
 
-          try {
-            document.getElementById("upload-loading").style.display = "block"; // 👈 Show
+  if ((data.photoGallery || []).length >= 4) {
+    alert("Można przesłać maksymalnie 4 zdjęcia.");
+    return;
+  }
 
-            const resizedBlob = await resizeImage(file);
-            const storageRef = ref(storage, `photos/${personId}/${Date.now()}.jpg`);
-            await uploadBytes(storageRef, resizedBlob);
-            const downloadURL = await getDownloadURL(storageRef);
-            const updatedGallery = [...(data.photoGallery || []), downloadURL];
-            await updateDoc(docRef, { photoGallery: updatedGallery });
-            alert("Zdjęcie zostało pomyślnie przesłane.");
-            fileInput.value = "";
-            location.reload();
-          } catch (error) {
-            console.error("Upload error:", error);
-            alert("Wystąpił błąd podczas przesyłania zdjęcia.");
-          } finally {
-                // 👇 Hide it when upload finishes (either success or error)
-            loadingIndicator.style.display = "none";
-          }
-        });
+  loadingIndicator.style.display = "block";
+
+  try {
+    const resizedBlob = await resizeImage(file);
+    const storageRef = ref(storage, `photos/${personId}/${Date.now()}.jpg`);
+    await uploadBytes(storageRef, resizedBlob);
+    const downloadURL = await getDownloadURL(storageRef);
+    const updatedGallery = [...(data.photoGallery || []), downloadURL];
+    await updateDoc(docRef, { photoGallery: updatedGallery });
+
+    alert("Zdjęcie zostało pomyślnie przesłane.");
+    fileInput.value = "";
+    location.reload();
+  } catch (error) {
+    console.error("Upload error:", error);
+    alert("Wystąpił błąd podczas przesyłania zdjęcia.");
+  } finally {
+    loadingIndicator.style.display = "none";
+  }
+});
+
   
         // 🖼️ Load gallery
         if (data.photoGallery?.length) {
