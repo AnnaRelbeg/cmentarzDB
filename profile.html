@@ -163,7 +163,10 @@
             font-weight: bold;
             cursor: pointer;
           ">Prześlij zdjęcie</button>
-      
+          
+          <!-- New loading indicator -->
+          <div id="upload-loading" style="display: none; margin-top: 1rem; color: #555;">⏳ Przesyłanie zdjęcia...</div>
+
           <p id="upload-placeholder-msg" style="margin-top: 1rem; color: #999;">
           </p>
         </form>
@@ -439,6 +442,8 @@
           }
   
           try {
+            document.getElementById("upload-loading").style.display = "block"; // 👈 Show
+
             const resizedBlob = await resizeImage(file);
             const storageRef = ref(storage, `photos/${personId}/${Date.now()}.jpg`);
             await uploadBytes(storageRef, resizedBlob);
@@ -451,6 +456,8 @@
           } catch (error) {
             console.error("Upload error:", error);
             alert("Wystąpił błąd podczas przesyłania zdjęcia.");
+          } finally {
+            document.getElementById("upload-loading").style.display = "none"; // 👈 Hide
           }
         });
   
@@ -478,8 +485,6 @@
       });
     }
   </script>
-  
-  
-  
+
 </body>
 </html>
