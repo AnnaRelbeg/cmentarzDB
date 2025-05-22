@@ -150,6 +150,9 @@
             font-weight: bold;
             margin-bottom: 1rem;
           ">📷 Wybierz zdjęcie</label>
+
+          <!-- 👇 Add this line below -->
+  <p id="file-selected-msg" style="color: #444; font-weight: bold; display: none;"></p>
       
           <br />
       
@@ -435,6 +438,17 @@
         document.getElementById("upload-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const fileInput = document.getElementById("photo-file");
+  const fileSelectedMsg = document.getElementById("file-selected-msg");
+fileInput.addEventListener("change", () => {
+  const fileName = fileInput.files[0]?.name;
+  if (fileName) {
+    fileSelectedMsg.textContent = `✅ Wybrano: ${fileName}`;
+    fileSelectedMsg.style.display = "block";
+  } else {
+    fileSelectedMsg.style.display = "none";
+  }
+});
+
   const file = fileInput.files[0];
   const loadingIndicator = document.getElementById("upload-loading"); // ✅ define this!
 
