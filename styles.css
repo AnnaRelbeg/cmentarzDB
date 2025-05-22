@@ -696,17 +696,16 @@ CANDLES
   margin-top: 3rem;
   text-align: center;
   padding: 1rem;
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: rgba(255, 255, 255, 0.5);
   border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(255,255,255,0.8);
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
-  color: white;
 }
 
 #light-candle-btn {
-  background-color: white;
+  background-color: rgb(255, 255, 255,0.5);
   color: black;
   padding: 0.6rem 1.4rem;
   border: none;
@@ -718,7 +717,7 @@ CANDLES
 }
 
 #light-candle-btn:hover {
-  background-color: white;
+  background-color: #59714d;
 }
 
 #candle-display {
@@ -737,7 +736,7 @@ CANDLES
 }
 
 #candle-display img:hover {
-  transform: scale(1.05);
+  transform: scale(1.08);
 }
 
 .candle-quote {
