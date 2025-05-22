@@ -165,7 +165,9 @@
           ">Prześlij zdjęcie</button>
           
           <!-- New loading indicator -->
-          <div id="upload-loading" style="display: none; margin-top: 1rem; color: #555;">⏳ Przesyłanie zdjęcia...</div>
+          <div id="upload-loading" style="display: none; margin-top: 1rem; color: #555; font-weight: bold;">
+            ⏳ Przesyłanie zdjęcia...
+          </div>
 
           <p id="upload-placeholder-msg" style="margin-top: 1rem; color: #999;">
           </p>
@@ -440,7 +442,11 @@
             alert("Można przesłać maksymalnie 4 zdjęcia.");
             return;
           }
-  
+          
+           // 👇 Show the loading spinner *immediately*
+            loadingIndicator.style.display = "block";
+
+
           try {
             document.getElementById("upload-loading").style.display = "block"; // 👈 Show
 
@@ -457,7 +463,8 @@
             console.error("Upload error:", error);
             alert("Wystąpił błąd podczas przesyłania zdjęcia.");
           } finally {
-            document.getElementById("upload-loading").style.display = "none"; // 👈 Hide
+                // 👇 Hide it when upload finishes (either success or error)
+            loadingIndicator.style.display = "none";
           }
         });
   
