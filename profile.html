@@ -221,6 +221,8 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
     import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
+
     
     const firebaseConfig = {
       apiKey: "AIzaSyChVtFHlA4mDuwx-xi7jLGMWvNYcNrrANM",
@@ -232,8 +234,29 @@
       measurementId: "G-GEDTJPLZ87"
     };
     
+    function resizeImage(file, maxSize = 800) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = event => {
+      const img = new Image();
+      img.src = event.target.result;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const scale = maxSize / Math.max(img.width, img.height);
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob(blob => resolve(blob), "image/jpeg", 0.7); // 70% quality
+      };
+    };
+  });
+}
+
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    const storage = getStorage(app);
     const params = new URLSearchParams(window.location.search);
     const personId = params.get("id");
     const galleryContainer = document.getElementById("profile-gallery");
@@ -393,6 +416,38 @@ document.getElementById("profile-memory").appendChild(memoryForm);
         }
     
         renderCandles(candles);
+
+        // 📸 Handle photo upload
+document.getElementById("upload-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const fileInput = document.getElementById("photo-file");
+  const file = fileInput.files[0];
+  if (!file) return;
+
+  if ((data.photoGallery || []).length >= 4) {
+    alert("Można przesłać maksymalnie 4 zdjęcia.");
+    return;
+  }
+
+  try {
+    const resizedBlob = await resizeImage(file);
+    const storageRef = ref(storage, `photos/${personId}/${Date.now()}.jpg`);
+    await uploadBytes(storageRef, resizedBlob);
+    const downloadURL = await getDownloadURL(storageRef);
+
+    const updatedGallery = [...(data.photoGallery || []), downloadURL];
+    await updateDoc(docRef, { photoGallery: updatedGallery });
+
+    alert("Zdjęcie zostało pomyślnie przesłane.");
+    fileInput.value = "";
+    location.reload(); // refresh to display new photo
+  } catch (error) {
+    console.error("Upload error:", error);
+    alert("Wystąpił błąd podczas przesyłania zdjęcia.");
+  }
+});
+
     
         lightCandleBtn.addEventListener("click", async () => {
           const newCandle = { timestamp: new Date().toISOString() };
