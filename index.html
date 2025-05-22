@@ -36,6 +36,7 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
       <li><a href="#gallery">Galeria</a></li>
       <li><a href="#zasluzeni">Zasłużeni</a></li>
       <li><a href="#contact">Kontakt</a></li>
+      <li><a href="#donations">💖 Wsparcie</a></li>
       <li><a href="admin.html">🛠️ Admin</a></li> <!-- ✅ NEW ADMIN LINK -->      
     </ul>
   </nav>
@@ -115,11 +116,53 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
   </div>
 </section>
 
+<section id="donations" data-aos="fade-up" data-aos-delay="300" class="section">
+  <h2>Wsparcie dla cmentarza</h2>
+  <p>
+    Cmentarz to miejsce pamięci, modlitwy i wdzięczności – świadectwo tych, którzy byli przed nami. 
+    Dzięki wspólnemu zaangażowaniu możemy je utrzymać w duchu szacunku i troski.
+  </p>
+  <p>
+    Jeśli czujesz w sercu chęć wsparcia, możesz przekazać dobrowolną darowiznę na rzecz utrzymania cmentarza.
+  </p>
+  <p>
+    <strong>Nr konta parafii:</strong><br>
+    <span id="konto-nr">73 9462 1026 2003 3001 1283 0001</span><br>
+    <button onclick="copyAccount()" style="
+    margin-top: 0.75rem;
+    background-color: #6a8b5f;
+    color: white;
+    padding: 0.5rem 1.2rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+  ">
+    📋 Kopiuj numer konta
+  </button>
+  </p>
+</section>
+
+<script>
+  function copyAccount() {
+    const text = document.getElementById("konto-nr").textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      alert("✅ Numer konta został skopiowany do schowka.");
+    });
+  }
+</script>
+
+
   <section id="contact" data-aos="fade-up" data-aos-delay="300" class="section contact">
     <h2 data-aos="fade-up" data-aos-delay="300">Kontakt</h2>
     <p data-aos="fade-up" data-aos-delay="300">
       Masz pytania lub chcesz zgłosić poprawki? Skontaktuj się z nami pod adresem: <br/>
-      <a href="mailto:parafia@dabrowkibrenskie.pl">parafia@dabrowkibrenskie.pl</a>
+      <a href="mailto:parafia@dabrowkibrenskie.pl">parafia@dabrowkibrenskie.pl</a> lub pod numerem tel. 14-641-21-80 <br> <br>
+      <strong>Adres Parafii:</strong> <br>
+      PARAFIA RZYMSKOKATOLICKA <br>
+      p.w. PRZEMIENIENIA PAŃSKIEGO <br>
+      DĄBRÓWKI BREŃSKIE 151 A <br>
+      33-210 Olesno <br>
     </p>
   </section>
 
