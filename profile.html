@@ -418,8 +418,9 @@ document.getElementById("profile-memory").appendChild(memoryForm);
         renderCandles(candles);
 
         // 📸 Handle photo upload
-document.getElementById("upload-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
+
+        document.getElementById("upload-form").addEventListener("submit", async (e) => {
+          e.preventDefault();
 
   const fileInput = document.getElementById("photo-file");
   const file = fileInput.files[0];
