@@ -406,22 +406,28 @@ footer {
 .profileSwiper {
   width: 100%;
   max-width: 700px;
-  aspect-ratio: 3 / 4; /* Portrait-safe ratio */
+  aspect-ratio: 3 / 4;
+  max-height: 90vh; /* ✅ optional */
   margin: 2rem auto 1rem auto;
-  border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  position: relative;
+  border-radius: 10px;
   background-color: rgba(255, 255, 255, 0.05);
 }
 
+
 .profileSwiper .swiper-slide img {
-  width: 100%;
+  width: auto;
   height: 100%;
+  max-width: 100%;
+  max-height: 100%;
   object-fit: contain;
   background-color: #fff;
   border-radius: 16px;
-  cursor: zoom-in;
+  display: block;
+  margin: 0 auto;
 }
+
 
 
 
