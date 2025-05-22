@@ -218,12 +218,12 @@
     showSlides();
     </script>
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
     import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
-
-    
+  
     const firebaseConfig = {
       apiKey: "AIzaSyChVtFHlA4mDuwx-xi7jLGMWvNYcNrrANM",
       authDomain: "cmentarz-dabrowki.firebaseapp.com",
@@ -233,34 +233,34 @@
       appId: "1:502809191219:web:9526a28823974e90c91446",
       measurementId: "G-GEDTJPLZ87"
     };
-    
+  
     function resizeImage(file, maxSize = 800) {
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = event => {
-      const img = new Image();
-      img.src = event.target.result;
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        const scale = maxSize / Math.max(img.width, img.height);
-        canvas.width = img.width * scale;
-        canvas.height = img.height * scale;
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        canvas.toBlob(blob => resolve(blob), "image/jpeg", 0.7); // 70% quality
-      };
-    };
-  });
-}
-
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = event => {
+          const img = new Image();
+          img.src = event.target.result;
+          img.onload = () => {
+            const canvas = document.createElement("canvas");
+            const scale = maxSize / Math.max(img.width, img.height);
+            canvas.width = img.width * scale;
+            canvas.height = img.height * scale;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            canvas.toBlob(blob => resolve(blob), "image/jpeg", 0.7);
+          };
+        };
+      });
+    }
+  
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const storage = getStorage(app);
     const params = new URLSearchParams(window.location.search);
     const personId = params.get("id");
     const galleryContainer = document.getElementById("profile-gallery");
-    
+  
     if (!personId) {
       document.getElementById("profile-name").textContent = "Brak ID profilu w adresie URL.";
     } else {
@@ -270,8 +270,9 @@
           document.getElementById("profile-name").textContent = "Nie znaleziono profilu.";
           return;
         }
-    
+  
         const data = docSnap.data();
+  
         document.getElementById("profile-name").textContent = data.fullName;
         document.getElementById("profile-id").textContent = data.id;
         document.getElementById("profile-location").textContent = data.location || "-";
@@ -279,13 +280,52 @@
         document.getElementById("profile-death").textContent = data.deathDate || "-";
         document.getElementById("profile-age").textContent = data.age || "-";
         document.getElementById("profile-description").textContent = data.description || "-";
-    
-        // 🔁 Memories display
+  
+        // 🕯️ Candles
+        const lightCandleBtn = document.getElementById("light-candle-btn");
+        const candleDisplay = document.getElementById("candle-display");
+        let candles = data.candles || [];
+  
+        function renderCandles(candlesList) {
+          candleDisplay.innerHTML = "";
+          const now = new Date();
+          const recent = candlesList
+            .filter(c => new Date(c.timestamp) > new Date(now - 7 * 24 * 60 * 60 * 1000))
+            .slice(-10);
+          recent.forEach(() => {
+            const candle = document.createElement("img");
+            candle.src = "assets/images/candle.png";
+            candle.alt = "Znicz";
+            candle.style.width = "40px";
+            candle.style.height = "60px";
+            candle.style.objectFit = "contain";
+            candleDisplay.appendChild(candle);
+          });
+        }
+  
+        renderCandles(candles);
+  
+        lightCandleBtn.addEventListener("click", async () => {
+          const newCandle = { timestamp: new Date().toISOString() };
+          candles.push(newCandle);
+          candles = candles
+            .filter(c => new Date(c.timestamp) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000))
+            .slice(-10);
+          try {
+            await updateDoc(docRef, { candles });
+            renderCandles(candles);
+          } catch (error) {
+            alert("Błąd zapalania znicza.");
+            console.error(error);
+          }
+        });
+  
+        // 📝 Memories
         function renderMemories(memories = []) {
           const container = document.getElementById("profile-memory");
           const list = document.createElement("div");
           list.style.marginTop = "1rem";
-    
+  
           if (memories.length === 0) {
             list.innerHTML = "<p>Brak wspomnień.</p>";
           } else {
@@ -299,7 +339,6 @@
               box.innerHTML = `
                 <p style="margin: 0;"><strong>Od:</strong> ${mem.from || "Nieznane"}</p>
                 <p style="margin-top: 0.5rem;">${mem.text}</p>
-
                 <button class="report-btn" data-index="${index}" style="
                   position: absolute;
                   top: 10px;
@@ -314,12 +353,12 @@
               list.appendChild(box);
             });
           }
-    
+  
           const oldList = document.getElementById("memory-list");
           if (oldList) oldList.remove();
           list.id = "memory-list";
           container.appendChild(list);
-    
+  
           list.querySelectorAll(".report-btn").forEach(button => {
             button.addEventListener("click", async () => {
               const index = button.dataset.index;
@@ -337,135 +376,85 @@
             });
           });
         }
-    
+  
         renderMemories(data.memories || []);
-    
-        // 📝 Memory form setup
-// 📝 Memory form setup
-const memoryForm = document.createElement("form");
-memoryForm.id = "memory-form";
-memoryForm.style.marginTop = "1.5rem";
-
-memoryForm.innerHTML = `
-  <input id="memory-from" type="text" placeholder="Od kogo?" required 
-    style="width: 100%; margin-bottom: 0.5rem; padding: 0.6rem; border-radius: 8px; border: 1px solid #ccc;" />
-  <textarea id="memory-input" rows="4" placeholder="Dodaj swoje wspomnienie..." required 
-    style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid #ccc;"></textarea>
-  <button type="submit" style="margin-top: 0.75rem; background-color: #6a8b5f; color: white; 
-    padding: 0.5rem 1rem; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
-    Zapisz wspomnienie
-  </button>
-  <p id="memory-success" style="color: green; display: none; margin-top: 1rem;">
-    Dziękujemy za dodanie wspomnienia!
-  </p>
-`;
-
-document.getElementById("profile-memory").appendChild(memoryForm);
-
-    
-  memoryForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const memoryInput = document.getElementById("memory-input");
-  const memoryFrom = document.getElementById("memory-from");
-  const memoryText = memoryInput.value.trim();
-  const memoryAuthor = memoryFrom.value.trim();
-
-  if (!memoryText || !memoryAuthor) return;
-
-  try {
-    const newMemory = {
-      text: memoryText,
-      from: memoryAuthor, // use the already-trimmed value
-      timestamp: new Date().toISOString(),
-      reported: false
-    };
-    const updatedMemories = [...(data.memories || []), newMemory];
-    await updateDoc(docRef, { memories: updatedMemories });
-    memoryInput.value = "";
-    memoryFrom.value = ""; // reset author input too
-    document.getElementById("memory-success").style.display = "block";
-    data.memories = updatedMemories;
-    renderMemories(updatedMemories);
-  } catch (error) {
-    alert("Wystąpił błąd podczas zapisywania wspomnienia. Spróbuj ponownie.");
-    console.error(error);
-  }
-});
-
-    
-        // 🕯️ Candle logic
-        const lightCandleBtn = document.getElementById("light-candle-btn");
-        const candleDisplay = document.getElementById("candle-display");
-        let candles = data.candles || [];
-    
-        function renderCandles(candlesList) {
-          candleDisplay.innerHTML = "";
-          const now = new Date();
-          const recent = candlesList
-            .filter(c => new Date(c.timestamp) > new Date(now - 7 * 24 * 60 * 60 * 1000))
-            .slice(-10);
-          recent.forEach(() => {
-            const candle = document.createElement("img");
-            candle.src = "assets/images/candle.png";
-            candle.alt = "Znicz";
-            candle.style.width = "40px";
-            candle.style.height = "60px";
-            candle.style.objectFit = "contain";
-            candleDisplay.appendChild(candle);
-          });
-        }
-    
-        renderCandles(candles);
-
-        // 📸 Handle photo upload
-
-        document.getElementById("upload-form").addEventListener("submit", async (e) => {
+  
+        const memoryForm = document.createElement("form");
+        memoryForm.id = "memory-form";
+        memoryForm.style.marginTop = "1.5rem";
+        memoryForm.innerHTML = `
+          <input id="memory-from" type="text" placeholder="Od kogo?" required 
+            style="width: 100%; margin-bottom: 0.5rem; padding: 0.6rem; border-radius: 8px; border: 1px solid #ccc;" />
+          <textarea id="memory-input" rows="4" placeholder="Dodaj swoje wspomnienie..." required 
+            style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid #ccc;"></textarea>
+          <button type="submit" style="margin-top: 0.75rem; background-color: #6a8b5f; color: white; 
+            padding: 0.5rem 1rem; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
+            Zapisz wspomnienie
+          </button>
+          <p id="memory-success" style="color: green; display: none; margin-top: 1rem;">
+            Dziękujemy za dodanie wspomnienia!
+          </p>
+        `;
+        document.getElementById("profile-memory").appendChild(memoryForm);
+  
+        memoryForm.addEventListener("submit", async (e) => {
           e.preventDefault();
-
-  const fileInput = document.getElementById("photo-file");
-  const file = fileInput.files[0];
-  if (!file) return;
-
-  if ((data.photoGallery || []).length >= 4) {
-    alert("Można przesłać maksymalnie 4 zdjęcia.");
-    return;
-  }
-
-  try {
-    const resizedBlob = await resizeImage(file);
-    const storageRef = ref(storage, `photos/${personId}/${Date.now()}.jpg`);
-    await uploadBytes(storageRef, resizedBlob);
-    const downloadURL = await getDownloadURL(storageRef);
-
-    const updatedGallery = [...(data.photoGallery || []), downloadURL];
-    await updateDoc(docRef, { photoGallery: updatedGallery });
-
-    alert("Zdjęcie zostało pomyślnie przesłane.");
-    fileInput.value = "";
-    location.reload(); // refresh to display new photo
-  } catch (error) {
-    console.error("Upload error:", error);
-    alert("Wystąpił błąd podczas przesyłania zdjęcia.");
-  }
-});
-
-    
-        lightCandleBtn.addEventListener("click", async () => {
-          const newCandle = { timestamp: new Date().toISOString() };
-          candles.push(newCandle);
-          candles = candles
-            .filter(c => new Date(c.timestamp) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000))
-            .slice(-10);
+          const memoryInput = document.getElementById("memory-input");
+          const memoryFrom = document.getElementById("memory-from");
+          const memoryText = memoryInput.value.trim();
+          const memoryAuthor = memoryFrom.value.trim();
+  
+          if (!memoryText || !memoryAuthor) return;
+  
           try {
-            await updateDoc(docRef, { candles });
-            renderCandles(candles);
+            const newMemory = {
+              text: memoryText,
+              from: memoryAuthor,
+              timestamp: new Date().toISOString(),
+              reported: false
+            };
+            const updatedMemories = [...(data.memories || []), newMemory];
+            await updateDoc(docRef, { memories: updatedMemories });
+            memoryInput.value = "";
+            memoryFrom.value = "";
+            document.getElementById("memory-success").style.display = "block";
+            data.memories = updatedMemories;
+            renderMemories(updatedMemories);
           } catch (error) {
-            alert("Błąd zapalania znicza.");
+            alert("Wystąpił błąd podczas zapisywania wspomnienia. Spróbuj ponownie.");
             console.error(error);
           }
         });
-    
-        // Gallery
+  
+        // 📸 Upload photo
+        document.getElementById("upload-form").addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const fileInput = document.getElementById("photo-file");
+          const file = fileInput.files[0];
+          if (!file) return;
+  
+          if ((data.photoGallery || []).length >= 4) {
+            alert("Można przesłać maksymalnie 4 zdjęcia.");
+            return;
+          }
+  
+          try {
+            const resizedBlob = await resizeImage(file);
+            const storageRef = ref(storage, `photos/${personId}/${Date.now()}.jpg`);
+            await uploadBytes(storageRef, resizedBlob);
+            const downloadURL = await getDownloadURL(storageRef);
+            const updatedGallery = [...(data.photoGallery || []), downloadURL];
+            await updateDoc(docRef, { photoGallery: updatedGallery });
+            alert("Zdjęcie zostało pomyślnie przesłane.");
+            fileInput.value = "";
+            location.reload();
+          } catch (error) {
+            console.error("Upload error:", error);
+            alert("Wystąpił błąd podczas przesyłania zdjęcia.");
+          }
+        });
+  
+        // 🖼️ Load gallery
         if (data.photoGallery?.length) {
           data.photoGallery.forEach((url) => {
             const slide = document.createElement("div");
@@ -473,7 +462,7 @@ document.getElementById("profile-memory").appendChild(memoryForm);
             slide.innerHTML = `<img src="${url}" alt="${data.fullName}" />`;
             galleryContainer.appendChild(slide);
           });
-    
+  
           new Swiper(".profileSwiper", {
             loop: true,
             autoplay: { delay: 5000, disableOnInteraction: false },
@@ -488,8 +477,8 @@ document.getElementById("profile-memory").appendChild(memoryForm);
         }
       });
     }
-    </script>
-    
+  </script>
+  
   
   
 </body>
