@@ -417,7 +417,37 @@
         }
   
         renderMemories(data.memories || []);
-  
+        
+        // ✏️ Toggle update form visibility
+document.getElementById("show-update-form-btn").addEventListener("click", () => {
+  const form = document.getElementById("update-form");
+  form.style.display = form.style.display === "none" ? "block" : "none";
+});
+
+// 📩 Handle update message submission
+document.getElementById("update-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const message = document.getElementById("update-message").value.trim();
+  const successMsg = document.getElementById("update-success-msg");
+
+  if (!message) return;
+
+  try {
+    const updates = data.updateRequests || [];
+    updates.push({
+      message,
+      timestamp: new Date().toISOString()
+    });
+    await updateDoc(docRef, { updateRequests: updates });
+    document.getElementById("update-message").value = "";
+    successMsg.style.display = "block";
+  } catch (error) {
+    console.error("Błąd zgłaszania aktualizacji:", error);
+    alert("Wystąpił błąd podczas wysyłania sugestii.");
+  }
+});
+
+
         const memoryForm = document.createElement("form");
         memoryForm.id = "memory-form";
         memoryForm.style.marginTop = "1.5rem";
@@ -537,36 +567,6 @@ document.getElementById("upload-form").addEventListener("submit", async (e) => {
         }
       });
     }
-
-  // ✏️ Toggle update form visibility
-document.getElementById("show-update-form-btn").addEventListener("click", () => {
-  const form = document.getElementById("update-form");
-  form.style.display = form.style.display === "none" ? "block" : "none";
-});
-
-// 📩 Handle update message submission
-document.getElementById("update-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const message = document.getElementById("update-message").value.trim();
-  const successMsg = document.getElementById("update-success-msg");
-
-  if (!message) return;
-
-  try {
-    // Save as a new array entry
-    const updates = data.updateRequests || [];
-    updates.push({
-      message,
-      timestamp: new Date().toISOString()
-    });
-    await updateDoc(docRef, { updateRequests: updates });
-    document.getElementById("update-message").value = "";
-    successMsg.style.display = "block";
-  } catch (error) {
-    console.error("Błąd zgłaszania aktualizacji:", error);
-    alert("Wystąpił błąd podczas wysyłania sugestii.");
-  }
-});
 
   </script>
 
