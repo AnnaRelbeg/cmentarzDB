@@ -156,7 +156,7 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
 
     document.getElementById("lightbox-close").addEventListener("click", (e) => {
   e.stopPropagation();
-  document.getElementById("lightbox").style.display = "none";
+  lightbox.style.display = "none";
 });
 
 
@@ -187,6 +187,34 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
         lightbox.style.display = "none";
       }
     });
+
+    // ✅ SWIPE SUPPORT
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    lightbox.addEventListener("touchstart", (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+
+    lightbox.addEventListener("touchend", (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    });
+
+    function handleSwipe() {
+      const threshold = 50; // Minimum swipe distance
+      const diff = touchEndX - touchStartX;
+
+      if (diff > threshold) {
+        // Swipe right → previous
+        currentIndex = (currentIndex - 1 + galleryImages.length) % galleryImages.length;
+        showImage(currentIndex);
+      } else if (diff < -threshold) {
+        // Swipe left → next
+        currentIndex = (currentIndex + 1) % galleryImages.length;
+        showImage(currentIndex);
+      }
+    }
   });
 </script>
 
