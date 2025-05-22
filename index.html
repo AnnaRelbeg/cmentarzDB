@@ -218,11 +218,13 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
 const queryTokens = query.split(" ");
 
 const nameMatches = queryTokens.every(token =>
-  nameTokens.some(namePart => namePart.startsWith(token))
+  nameTokens.some(namePart => namePart.includes(token))
 );
 
 
-  if (nameMatches || data.id?.toLowerCase().includes(query)) {
+
+if (nameMatches || normalize(String(data.id)).includes(query))
+{
     results.push(data);
   }
 });
