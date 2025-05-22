@@ -434,11 +434,10 @@
           }
         });
   
-        // 📸 Upload photo
-        document.getElementById("upload-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const fileInput = document.getElementById("photo-file");
-  const fileSelectedMsg = document.getElementById("file-selected-msg");
+// 📸 Show file name when selected
+const fileInput = document.getElementById("photo-file");
+const fileSelectedMsg = document.getElementById("file-selected-msg");
+
 fileInput.addEventListener("change", () => {
   const fileName = fileInput.files[0]?.name;
   if (fileName) {
@@ -449,8 +448,11 @@ fileInput.addEventListener("change", () => {
   }
 });
 
+// 📸 Upload photo
+document.getElementById("upload-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
   const file = fileInput.files[0];
-  const loadingIndicator = document.getElementById("upload-loading"); // ✅ define this!
+  const loadingIndicator = document.getElementById("upload-loading");
 
   if (!file) return;
 
@@ -471,6 +473,7 @@ fileInput.addEventListener("change", () => {
 
     alert("Zdjęcie zostało pomyślnie przesłane.");
     fileInput.value = "";
+    fileSelectedMsg.style.display = "none";
     location.reload();
   } catch (error) {
     console.error("Upload error:", error);
@@ -480,7 +483,6 @@ fileInput.addEventListener("change", () => {
   }
 });
 
-  
         // 🖼️ Load gallery
         if (data.photoGallery?.length) {
           data.photoGallery.forEach((url) => {
