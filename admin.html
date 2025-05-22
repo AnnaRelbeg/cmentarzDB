@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="admin-container" style="max-width: 700px; margin: 3rem auto; background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
+    <h1 style="text-align: center;">🛠️ Panel Administratora</h1>
+    <script>
+        const adminPassword = "twojehaslo123"; // 🛡️ Set your admin password here
+      
+        const accessGranted = prompt("🔐 Podaj hasło administratora:");
+        if (accessGranted !== adminPassword) {
+          document.body.innerHTML = "<h2 style='text-align:center; margin-top:4rem;'>⛔ Dostęp zabroniony</h2>";
+          throw new Error("Nieprawidłowe hasło administratora.");
+        }
+      </script>
+      
+    <section style="margin-bottom: 2rem;">
+      <h2>➕ Zgłoś nową osobę</h2>
+      <form id="submission-form">
+        <input type="text" id="fullName" placeholder="Imię i nazwisko" required style="width: 100%; margin-bottom: 0.5rem;" />
+        <input type="date" id="birthDate" placeholder="Data urodzenia" required style="width: 100%; margin-bottom: 0.5rem;" />
+        <input type="date" id="deathDate" placeholder="Data śmierci" required style="width: 100%; margin-bottom: 0.5rem;" />
+        <input type="text" id="graveNumber" placeholder="Numer grobu" required style="width: 100%; margin-bottom: 0.5rem;" />
+        <textarea id="description" placeholder="Krótki opis" rows="4" style="width: 100%; margin-bottom: 0.5rem;"></textarea>
+        <input type="file" id="photoFile" accept="image/*" style="margin-bottom: 1rem;" />
+        <button type="submit" style="padding: 0.5rem 1rem; background-color: #6a8b5f; color: white; border: none; border-radius: 8px;">Prześlij do weryfikacji</button>
+        <p id="submit-success" style="color: green; display: none; margin-top: 1rem;">✅ Wpis został przesłany do weryfikacji</p>
+      </form>
+    </section>
+
+    <hr style="margin: 2rem 0;">
+
+    <section style="margin-bottom: 2rem;">
+      <h2>🗑️ Usuń osobę</h2>
+      <form id="delete-form">
+        <input type="text" id="delete-id" placeholder="ID osoby do usunięcia" required style="width: 100%; margin-bottom: 0.5rem;" />
+        <button type="submit" style="padding: 0.5rem 1rem; background-color: #a94442; color: white; border: none; border-radius: 8px;">Usuń</button>
+      </form>
+    </section>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getFirestore, collection, addDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyChVtFHlA4mDuwx-xi7jLGMWvNYcNrrANM",
+      authDomain: "cmentarz-dabrowki.firebaseapp.com",
+      projectId: "cmentarz-dabrowki",
+      storageBucket: "cmentarz-dabrowki.appspot.com",
+      messagingSenderId: "502809191219",
+      appId: "1:502809191219:web:9526a28823974e90c91446"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    // ✅ Submit new person to pending_submissions
+    document.getElementById("submission-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const fullName = document.getElementById("fullName").value.trim();
+      const birthDate = document.getElementById("birthDate").value;
+      const deathDate = document.getElementById("deathDate").value;
+      const graveNumber = document.getElementById("graveNumber").value.trim();
+      const description = document.getElementById("description").value.trim();
+      const photoFile = document.getElementById("photoFile").files[0];
+
+      let photoURL = "";
+
+      try {
+        if (photoFile) {
+          const photoRef = ref(storage, `pending_photos/${Date.now()}_${photoFile.name}`);
+          await uploadBytes(photoRef, photoFile);
+          photoURL = await getDownloadURL(photoRef);
+        }
+
+        await addDoc(collection(db, "pending_submissions"), {
+          fullName,
+          birthDate,
+          deathDate,
+          graveNumber,
+          description,
+          photoURL,
+          submittedAt: new Date().toISOString()
+        });
+
+        document.getElementById("submission-form").reset();
+        document.getElementById("submit-success").style.display = "block";
+      } catch (error) {
+        alert("❌ Błąd podczas przesyłania: " + error.message);
+        console.error("Submission error:", error);
+      }
+    });
+
+    // ✅ Delete person by ID
+    document.getElementById("delete-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const id = document.getElementById("delete-id").value.trim();
+
+      try {
+        await deleteDoc(doc(db, "zmarli", id));
+        alert("✅ Osoba została usunięta.");
+      } catch (err) {
+        alert("❌ Błąd podczas usuwania.");
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>
