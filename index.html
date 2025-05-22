@@ -308,7 +308,15 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         console.error("Menu button or navMenu not found");
       }
-    });</script>
+    });
+    
+    //Redirecting from index.html to a Cleaner URL
+if (window.location.pathname.indexOf('index.html') > -1) {
+    window.location.replace(window.location.pathname.replace('index.html', ''));
+  }
+    
+    </script>
 <script src="script.js"></script>
+
 </body>
 </html>
