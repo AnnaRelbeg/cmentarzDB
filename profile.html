@@ -347,121 +347,153 @@
 
     renderCandles(candles);
 
-    lightCandleBtn.addEventListener("click", async () => {
-      const newCandle = { timestamp: new Date().toISOString() };
-      candles.push(newCandle);
-      candles = candles
-        .filter(c => new Date(c.timestamp) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000))
-        .slice(-10);
+lightCandleBtn.addEventListener("click", async () => {
+  const newCandle = { timestamp: new Date().toISOString() };
+  candles.push(newCandle);
+  candles = candles
+    .filter(c => new Date(c.timestamp) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000))
+    .slice(-10);
+
+  try {
+    await updateDoc(doc(db, "zmarli", personId), { candles });
+
+    // 🚨 Clear cache so we fetch fresh data
+    localStorage.removeItem(`profile_${personId}`);
+    localStorage.removeItem(`profile_${personId}_timestamp`);
+
+    // ✅ Re-fetch fresh data to show updated candles
+    const freshSnap = await getDoc(doc(db, "zmarli", personId));
+    if (freshSnap.exists()) {
+      const freshData = freshSnap.data();
+      localStorage.setItem(`profile_${personId}`, JSON.stringify(freshData));
+      localStorage.setItem(`profile_${personId}_timestamp`, Date.now().toString());
+      renderProfile(freshData);
+    }
+  } catch (error) {
+    alert("Błąd zapalania znicza.");
+    console.error(error);
+  }
+});
+
+
+  // 📝 Memories
+const memoryForm = document.createElement("form");
+memoryForm.id = "memory-form";
+memoryForm.style.marginTop = "1.5rem";
+memoryForm.innerHTML = `
+  <input id="memory-from" type="text" placeholder="Od kogo?" required 
+    style="width: 100%; height: 44px; margin-bottom: 0.5rem; padding: 0.6rem; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box; line-height: 1.2rem;" />
+  <textarea id="memory-input" rows="4" placeholder="Dodaj swoje wspomnienie..." required 
+    style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid #ccc;"></textarea>
+  <button type="submit" style="margin-top: 0.75rem; background-color: #6a8b5f; color: white; 
+    padding: 0.5rem 1rem; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
+    Zapisz wspomnienie
+  </button>
+  <p id="memory-success" style="color: green; display: none; margin-top: 1rem;">
+    Dziękujemy za dodanie wspomnienia!
+  </p>
+`;
+document.getElementById("profile-memory").appendChild(memoryForm);
+
+function renderMemories(memories = []) {
+  const container = document.getElementById("profile-memory");
+  const list = document.createElement("div");
+  list.style.marginTop = "1rem";
+
+  if (memories.length === 0) {
+    list.innerHTML = "<p>Brak wspomnień.</p>";
+  } else {
+    memories.forEach((mem, index) => {
+      const box = document.createElement("div");
+      box.style.padding = "1rem";
+      box.style.marginBottom = "1rem";
+      box.style.borderRadius = "10px";
+      box.style.backgroundColor = "#ffffffcc";
+      box.style.position = "relative";
+      box.innerHTML = `
+        <p style="margin: 0;"><strong>Od:</strong> ${mem.from || "Nieznane"}</p>
+        <p style="margin-top: 0.5rem;">${mem.text}</p>
+        <button class="report-btn" data-index="${index}" style="
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          background: none;
+          border: none;
+          color: red;
+          cursor: pointer;
+          font-size: 0.85rem;
+        ">Zgłoś</button>
+      `;
+      list.appendChild(box);
+    });
+  }
+
+  const oldList = document.getElementById("memory-list");
+  if (oldList) oldList.remove();
+  list.id = "memory-list";
+  container.appendChild(list);
+
+  list.querySelectorAll(".report-btn").forEach(button => {
+    button.addEventListener("click", async () => {
+      const index = button.dataset.index;
       try {
-        await updateDoc(doc(db, "zmarli", personId), { candles });
-        renderCandles(candles);
-      } catch (error) {
-        alert("Błąd zapalania znicza.");
-        console.error(error);
+        const updatedMemories = [...data.memories];
+        updatedMemories[index].reported = true;
+        await updateDoc(doc(db, "zmarli", personId), { memories: updatedMemories });
+        alert("Dziękujemy. Wspomnienie zostało zgłoszone do sprawdzenia.");
+        data.memories = updatedMemories;
+        renderMemories(updatedMemories);
+      } catch (err) {
+        console.error("Błąd zgłoszenia:", err);
+        alert("Wystąpił błąd podczas zgłaszania.");
       }
     });
+  });
+}
 
-    // 📝 Memories
-    const memoryForm = document.createElement("form");
-    memoryForm.id = "memory-form";
-    memoryForm.style.marginTop = "1.5rem";
-    memoryForm.innerHTML = `
-      <input id="memory-from" type="text" placeholder="Od kogo?" required 
-        style="width: 100%; height: 44px; margin-bottom: 0.5rem; padding: 0.6rem; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box; line-height: 1.2rem;" />
-      <textarea id="memory-input" rows="4" placeholder="Dodaj swoje wspomnienie..." required 
-        style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid #ccc;"></textarea>
-      <button type="submit" style="margin-top: 0.75rem; background-color: #6a8b5f; color: white; 
-        padding: 0.5rem 1rem; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
-        Zapisz wspomnienie
-      </button>
-      <p id="memory-success" style="color: green; display: none; margin-top: 1rem;">
-        Dziękujemy za dodanie wspomnienia!
-      </p>
-    `;
-    document.getElementById("profile-memory").appendChild(memoryForm);
+renderMemories(data.memories || []);
 
-    function renderMemories(memories = []) {
-      const container = document.getElementById("profile-memory");
-      const list = document.createElement("div");
-      list.style.marginTop = "1rem";
+memoryForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const memoryInput = document.getElementById("memory-input");
+  const memoryFrom = document.getElementById("memory-from");
+  const memoryText = memoryInput.value.trim();
+  const memoryAuthor = memoryFrom.value.trim();
 
-      if (memories.length === 0) {
-        list.innerHTML = "<p>Brak wspomnień.</p>";
-      } else {
-        memories.forEach((mem, index) => {
-          const box = document.createElement("div");
-          box.style.padding = "1rem";
-          box.style.marginBottom = "1rem";
-          box.style.borderRadius = "10px";
-          box.style.backgroundColor = "#ffffffcc";
-          box.style.position = "relative";
-          box.innerHTML = `
-            <p style="margin: 0;"><strong>Od:</strong> ${mem.from || "Nieznane"}</p>
-            <p style="margin-top: 0.5rem;">${mem.text}</p>
-            <button class="report-btn" data-index="${index}" style="
-              position: absolute;
-              top: 10px;
-              right: 10px;
-              background: none;
-              border: none;
-              color: red;
-              cursor: pointer;
-              font-size: 0.85rem;
-            ">Zgłoś</button>
-          `;
-          list.appendChild(box);
-        });
-      }
+  if (!memoryText || !memoryAuthor) return;
 
-      const oldList = document.getElementById("memory-list");
-      if (oldList) oldList.remove();
-      list.id = "memory-list";
-      container.appendChild(list);
+  try {
+    const newMemory = {
+      text: memoryText,
+      from: memoryAuthor,
+      timestamp: new Date().toISOString(),
+      reported: false
+    };
+    const updatedMemories = [...(data.memories || []), newMemory];
+    await updateDoc(doc(db, "zmarli", personId), { memories: updatedMemories });
 
-      list.querySelectorAll(".report-btn").forEach(button => {
-        button.addEventListener("click", async () => {
-          const index = button.dataset.index;
-          try {
-            const updatedMemories = [...data.memories];
-            updatedMemories[index].reported = true;
-            await updateDoc(doc(db, "zmarli", personId), { memories: updatedMemories });
-            alert("Dziękujemy. Wspomnienie zostało zgłoszone do sprawdzenia.");
-            data.memories = updatedMemories;
-            renderMemories(updatedMemories);
-          } catch (err) {
-            console.error("Błąd zgłoszenia:", err);
-            alert("Wystąpił błąd podczas zgłaszania.");
-          }
-        });
-      });
+    // ✅ Refresh cache
+    localStorage.removeItem(`profile_${personId}`);
+    localStorage.removeItem(`profile_${personId}_timestamp`);
+
+    // ✅ Re-fetch and re-render
+    const freshSnap = await getDoc(doc(db, "zmarli", personId));
+    if (freshSnap.exists()) {
+      const freshData = freshSnap.data();
+      localStorage.setItem(`profile_${personId}`, JSON.stringify(freshData));
+      localStorage.setItem(`profile_${personId}_timestamp`, Date.now().toString());
+      renderProfile(freshData);
     }
 
-    renderMemories(data.memories || []);
+    memoryInput.value = "";
+    memoryFrom.value = "";
+    document.getElementById("memory-success").style.display = "block";
+  } catch (error) {
+    alert("Wystąpił błąd podczas zapisywania wspomnienia. Spróbuj ponownie.");
+    console.error(error);
+  }
+});
 
-    document.getElementById("show-update-form-btn").addEventListener("click", () => {
-      const form = document.getElementById("update-form");
-      form.style.display = form.style.display === "none" ? "block" : "none";
-    });
-
-    document.getElementById("update-form").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const message = document.getElementById("update-message").value.trim();
-      const successMsg = document.getElementById("update-success-msg");
-
-      if (!message) return;
-
-      try {
-        const updates = data.updateRequests || [];
-        updates.push({ message, timestamp: new Date().toISOString() });
-        await updateDoc(doc(db, "zmarli", personId), { updateRequests: updates });
-        document.getElementById("update-message").value = "";
-        successMsg.style.display = "block";
-      } catch (error) {
-        console.error("Błąd zgłaszania aktualizacji:", error);
-        alert("Wystąpił błąd podczas wysyłania sugestii.");
-      }
-    });
 
     // 📸 Upload photo
     const fileInput = document.getElementById("photo-file");
