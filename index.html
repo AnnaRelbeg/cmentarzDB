@@ -318,7 +318,7 @@ let debounceTimeout;
 
 searchInput.addEventListener("input", () => {
   clearTimeout(debounceTimeout);
-  debounceTimeout = setTimeout(handleSearch, 1000); // delay search by 400ms after user stops typing
+  debounceTimeout = setTimeout(handleSearch, 900); // delay search by 400ms after user stops typing
 });
 
 async function handleSearch() {
