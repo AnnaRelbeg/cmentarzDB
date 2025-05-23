@@ -20,6 +20,9 @@
 
   <title>Cmentarz Dąbrówki Breńskie – Strona Główna</title>
   <link rel="icon" href="assets/images/1.png" type="image/png">
+  <link rel="apple-touch-icon" href="/assets/images/1.png">
+<meta name="theme-color" content="#6a8b5f">
+
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Open+Sans&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <!-- AOS Library (Animate on Scroll) -->
@@ -44,7 +47,7 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
 <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "Cemetery",
+    "@type": "Organization",
     "name": "Cmentarz Dąbrówki Breńskie",
     "description": "Oficjalna strona cmentarza w Dąbrówkach Breńskich",
     "address": {
@@ -53,6 +56,7 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
       "addressCountry": "PL"
     },
     "url": "https://www.cmentarzdabrowkibrenskie.pl"
+    "logo": "https://www.cmentarzdabrowkibrenskie.pl/assets/images/1.png"
   }
   </script>
   
@@ -318,7 +322,7 @@ let debounceTimeout;
 
 searchInput.addEventListener("input", () => {
   clearTimeout(debounceTimeout);
-  debounceTimeout = setTimeout(handleSearch, 900); // delay search by 400ms after user stops typing
+  debounceTimeout = setTimeout(handleSearch, 1000); // delay search by 400ms after user stops typing
 });
 
 async function handleSearch() {
