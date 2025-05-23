@@ -314,50 +314,68 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
   const searchInput = document.querySelector(".search-box input");
   const resultsContainer = document.getElementById("results-container");
 
-  searchInput.addEventListener("input", async () => {
-    const normalize = (str) => {
-  return str
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/ł/g, 'l')
-    .replace(/ś/g, 's')
-    .replace(/ź/g, 'z')
-    .replace(/ż/g, 'z')
-    .replace(/ć/g, 'c')
-    .replace(/ń/g, 'n')
-    .replace(/ę/g, 'e')
-    .replace(/ą/g, 'a')
-    .replace(/ó/g, 'o');
-};
+let debounceTimeout;
 
-
-    const query = normalize(searchInput.value.trim());
-
-    if (!query) return (resultsContainer.innerHTML = "");
-
-    const snapshot = await getDocs(collection(db, "zmarli"));
-    const results = [];
-
-    snapshot.forEach((doc) => {
-  const data = doc.data();
-  const fullNameNorm = normalize(data.fullName || "");
-const nameMatches = query.split(" ").every(token =>
-  fullNameNorm.includes(token)
-);
-
-
-
-
-if (nameMatches || normalize(String(data.id)).includes(query))
-{
-    results.push(data);
-  }
+searchInput.addEventListener("input", () => {
+  clearTimeout(debounceTimeout);
+  debounceTimeout = setTimeout(handleSearch, 400); // delay search by 400ms after user stops typing
 });
 
+async function handleSearch() {
+  const normalize = (str) => {
+    return str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .replace(/ł/g, 'l')
+      .replace(/ś/g, 's')
+      .replace(/ź/g, 'z')
+      .replace(/ż/g, 'z')
+      .replace(/ć/g, 'c')
+      .replace(/ń/g, 'n')
+      .replace(/ę/g, 'e')
+      .replace(/ą/g, 'a')
+      .replace(/ó/g, 'o');
+  };
 
-    displayResults(results);
+  const query = normalize(searchInput.value.trim());
+  if (!query) {
+    resultsContainer.innerHTML = "";
+    return;
+  }
+
+  const CACHE_DURATION_MS = 60 * 60 * 1000; // 1 hour
+  const now = Date.now();
+  const lastFetched = sessionStorage.getItem("zmarli_fetched");
+  let cachedData = sessionStorage.getItem("zmarli");
+
+  if (!cachedData || !lastFetched || now - lastFetched > CACHE_DURATION_MS) {
+    const snapshot = await getDocs(collection(db, "zmarli"));
+    const data = [];
+    snapshot.forEach(doc => data.push(doc.data()));
+    sessionStorage.setItem("zmarli", JSON.stringify(data));
+    sessionStorage.setItem("zmarli_fetched", now);
+    cachedData = data;
+  } else {
+    cachedData = JSON.parse(cachedData);
+  }
+
+  const results = [];
+
+  cachedData.forEach((data) => {
+    const fullNameNorm = normalize(data.fullName || "");
+    const nameMatches = query.split(" ").every(token =>
+      fullNameNorm.includes(token)
+    );
+    if (nameMatches || normalize(String(data.id)).includes(query)) {
+      results.push(data);
+    }
   });
+
+  displayResults(results);
+}
+
+
 
   function displayResults(results) {
   const container = document.getElementById("results-container");
