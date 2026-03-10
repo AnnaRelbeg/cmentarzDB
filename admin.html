@@ -308,6 +308,29 @@
           <input type="number" id="f-age" min="0" max="150" />
         </div>
       </div>
+      <!-- Location type selector — visible in create mode only -->
+      <div class="field-group" id="location-type-group" style="display:none;">
+        <label>Typ lokalizacji</label>
+        <div style="display:flex; gap:1.5rem; margin-top:0.4rem; flex-wrap:wrap;">
+          <label style="display:flex; align-items:center; gap:0.4rem; cursor:pointer; font-weight:normal; color:#333;">
+            <input type="radio" name="loc-type" value="new" id="loc-type-new" checked>
+            Nowa lokalizacja
+          </label>
+          <label style="display:flex; align-items:center; gap:0.4rem; cursor:pointer; font-weight:normal; color:#333;">
+            <input type="radio" name="loc-type" value="existing" id="loc-type-existing">
+            Istniejąca lokalizacja
+          </label>
+        </div>
+      </div>
+
+      <!-- Existing locations dropdown — visible when "existing" is selected -->
+      <div class="field-group" id="existing-location-group" style="display:none;">
+        <label for="f-location-select">Wybierz istniejący grób</label>
+        <select id="f-location-select">
+          <option value="">— Wybierz numer grobu —</option>
+        </select>
+      </div>
+
       <div class="field-group">
         <label for="f-location">Lokalizacja (numer grobu)</label>
         <input type="text" id="f-location" placeholder="np. 0005" />
@@ -462,17 +485,7 @@ async function doSearch() {
   resultsEl.innerHTML = "<p style='color:#777;'>Szukam… <span class='spinner'></span></p>";
 
   try {
-    let docs = [];
-    // Try sessionStorage cache first
-    const cached = sessionStorage.getItem("zmarli");
-    if (cached) {
-      docs = JSON.parse(cached);
-    } else {
-      const snap = await getDocs(collection(db, "zmarli"));
-      docs = snap.docs.map(d => d.data());
-      sessionStorage.setItem("zmarli", JSON.stringify(docs));
-      sessionStorage.setItem("zmarli_fetched", Date.now().toString());
-    }
+    const docs = await getAllDocs();
 
     const matches = docs.filter(p =>
       (p.fullName || "").toLowerCase().includes(term) ||
@@ -528,6 +541,8 @@ async function loadPersonIntoForm(id, cachedDocs) {
   document.getElementById("photo-section").style.display = "block";
   document.getElementById("edit-form-card").style.display = "block";
   document.getElementById("grave-banner").style.display = "none";
+  document.getElementById("location-type-group").style.display = "none";
+  document.getElementById("existing-location-group").style.display = "none";
   showStatus("save-status", "", "");
   document.getElementById("edit-form-card").scrollIntoView({ behavior: "smooth" });
 }
@@ -548,6 +563,11 @@ document.getElementById("new-person-btn").addEventListener("click", async () => 
   document.getElementById("f-location").value    = "";
   document.getElementById("f-description").value = "";
 
+  // Show location type selector, reset to "new"
+  document.getElementById("loc-type-new").checked = true;
+  document.getElementById("location-type-group").style.display = "block";
+  document.getElementById("existing-location-group").style.display = "none";
+
   setBadge("create");
   document.getElementById("photo-section").style.display = "none";
   document.getElementById("grave-banner").style.display = "none";
@@ -555,37 +575,112 @@ document.getElementById("new-person-btn").addEventListener("click", async () => 
   document.getElementById("edit-form-card").style.display = "block";
   document.getElementById("edit-form-card").scrollIntoView({ behavior: "smooth" });
 
-  idField.value = await suggestNextBaseId();
+  // For a new location, ID and location share the same suggested number
+  const nextLoc = await suggestNextLocation();
+  document.getElementById("f-location").value = nextLoc;
+  idField.value = nextLoc;
 });
 
-// ── Auto-suggest next sequential ID ───────
-async function suggestNextBaseId() {
-  try {
-    let docs = [];
-    const cached = sessionStorage.getItem("zmarli");
-    if (cached) {
-      docs = JSON.parse(cached);
-    } else {
-      const snap = await getDocs(collection(db, "zmarli"));
-      docs = snap.docs.map(d => d.data());
-      sessionStorage.setItem("zmarli", JSON.stringify(docs));
-      sessionStorage.setItem("zmarli_fetched", Date.now().toString());
-    }
+// ── Cache helper ───────────────────────────
+async function getAllDocs() {
+  const cached = sessionStorage.getItem("zmarli");
+  if (cached) return JSON.parse(cached);
+  const snap = await getDocs(collection(db, "zmarli"));
+  const docs = snap.docs.map(d => d.data());
+  sessionStorage.setItem("zmarli", JSON.stringify(docs));
+  sessionStorage.setItem("zmarli_fetched", Date.now().toString());
+  return docs;
+}
 
+// ── Suggest next available location number ─
+async function suggestNextLocation() {
+  try {
+    const docs = await getAllDocs();
     let maxNum = 0;
     docs.forEach(p => {
-      // Take only the base part before any dot suffix (e.g. "0005.1" → 5)
-      const base = String(p.id || "").split(".")[0];
-      const num  = parseInt(base, 10);
+      const num = parseInt(String(p.location || "").split(".")[0], 10);
       if (!isNaN(num)) maxNum = Math.max(maxNum, num);
     });
-
     return String(maxNum + 1).padStart(4, "0");
   } catch (err) {
-    console.error("ID suggestion error:", err);
+    console.error("Location suggestion error:", err);
     return "";
   }
 }
+
+// ── Location type radio handlers ───────────
+document.querySelectorAll("input[name='loc-type']").forEach(radio => {
+  radio.addEventListener("change", async () => {
+    const isNew = document.getElementById("loc-type-new").checked;
+    const existingGroup = document.getElementById("existing-location-group");
+    const idField       = document.getElementById("f-id");
+    const locField      = document.getElementById("f-location");
+
+    document.getElementById("grave-banner").style.display = "none";
+
+    if (isNew) {
+      existingGroup.style.display = "none";
+      document.getElementById("f-location-select").value = "";
+      idField.value = "…";
+      locField.value = "…";
+      const nextLoc = await suggestNextLocation();
+      locField.value = nextLoc;
+      idField.value  = nextLoc;
+    } else {
+      existingGroup.style.display = "block";
+      locField.value = "";
+      idField.value  = "";
+      await buildLocationDropdown();
+    }
+  });
+});
+
+// ── Build existing locations dropdown ──────
+async function buildLocationDropdown() {
+  const select = document.getElementById("f-location-select");
+  select.innerHTML = `<option value="">— Wybierz numer grobu —</option>`;
+  select.disabled = true;
+
+  try {
+    const docs = await getAllDocs();
+
+    // Group by location
+    const byLocation = {};
+    docs.forEach(p => {
+      const loc = (p.location || "").trim();
+      if (!loc) return;
+      if (!byLocation[loc]) byLocation[loc] = [];
+      byLocation[loc].push(p.fullName || p.id);
+    });
+
+    // Sort numerically where possible, then alphabetically
+    const sorted = Object.entries(byLocation).sort(([a], [b]) =>
+      a.localeCompare(b, undefined, { numeric: true })
+    );
+
+    sorted.forEach(([loc, names]) => {
+      const opt = document.createElement("option");
+      opt.value = loc;
+      opt.textContent = `${loc} — ${names.join(", ")}`;
+      select.appendChild(opt);
+    });
+  } catch (err) {
+    console.error("Location dropdown error:", err);
+  } finally {
+    select.disabled = false;
+  }
+}
+
+// ── Existing location select → fill fields ─
+document.getElementById("f-location-select").addEventListener("change", async () => {
+  const selectedLoc = document.getElementById("f-location-select").value;
+  if (!selectedLoc) return;
+
+  document.getElementById("f-location").value = selectedLoc;
+  // Trigger shared-grave lookup to suggest the next .X ID
+  clearTimeout(graveLookupTimer);
+  await doGraveLookup();
+});
 
 // ── Clear / cancel ─────────────────────────
 document.getElementById("clear-form-btn").addEventListener("click", () => {
@@ -617,15 +712,7 @@ async function doGraveLookup() {
   if (!location) { banner.style.display = "none"; return; }
 
   try {
-    // Use cache if available
-    let docs = [];
-    const cached = sessionStorage.getItem("zmarli");
-    if (cached) {
-      docs = JSON.parse(cached);
-    } else {
-      const snap = await getDocs(collection(db, "zmarli"));
-      docs = snap.docs.map(d => d.data());
-    }
+    const docs = await getAllDocs();
 
     const matches = docs.filter(p =>
       (p.location || "").trim() === location &&
