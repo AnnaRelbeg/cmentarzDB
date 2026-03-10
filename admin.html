@@ -802,22 +802,59 @@ async function loadPendingSubmissions() {
       const sid = docSnap.id;
       const card = document.createElement("div");
       card.className = "pending-card";
-      card.innerHTML = `
-        <h3>${s.fullName || "—"}</h3>
-        <p>Urodzony/a: ${s.birthDate || "?"} | Zmarły/a: ${s.deathDate || "?"}</p>
-        <p>Numer grobu: ${s.graveNumber || s.location || "—"}</p>
-        ${s.description ? `<p>${s.description}</p>` : ""}
-        ${s.photoURL ? `<img src="${s.photoURL}" alt="Zdjęcie" />` : ""}
-        <p style="font-size:0.75rem; color:#aaa;">Zgłoszono: ${s.submittedAt || "?"}</p>
-        <div class="pending-actions">
-          <button class="btn btn-green approve-btn" data-sid="${sid}">Zatwierdź</button>
-          <button class="btn btn-red reject-btn" data-sid="${sid}">Odrzuć</button>
-        </div>
-        <div class="status-msg" id="pstatus-${sid}"></div>
-      `;
-      listEl.appendChild(card);
 
-      card.querySelector(".approve-btn").addEventListener("click", () => approvePending(sid, s));
+      if (s.type === "update") {
+        // Profile update suggestion
+        card.innerHTML = `
+          <h3 style="color:#1565c0;">✏️ Sugestia aktualizacji profilu</h3>
+          <p><strong>Osoba:</strong> ${s.personName || "—"} (ID: ${s.personId || "—"})</p>
+          <p><strong>Wiadomość:</strong> ${s.message || "—"}</p>
+          <p style="font-size:0.75rem; color:#aaa;">Zgłoszono: ${s.submittedAt || "?"}</p>
+          <div class="pending-actions">
+            <button class="btn btn-green edit-person-btn" data-pid="${s.personId}">Edytuj osobę</button>
+            <button class="btn btn-red reject-btn" data-sid="${sid}">Odrzuć</button>
+          </div>
+          <div class="status-msg" id="pstatus-${sid}"></div>
+        `;
+        listEl.appendChild(card);
+
+        card.querySelector(".edit-person-btn").addEventListener("click", async () => {
+          // Switch to Edit tab and load the person
+          document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+          document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+          document.querySelector("[data-tab='tab-edit']").classList.add("active");
+          document.getElementById("tab-edit").classList.add("active");
+
+          const snap2 = await getDoc(doc(db, "zmarli", s.personId));
+          if (snap2.exists()) {
+            let docs = [];
+            const cached = sessionStorage.getItem("zmarli");
+            if (cached) docs = JSON.parse(cached);
+            await loadPersonIntoForm(s.personId, docs.length ? docs : null);
+          } else {
+            alert("Nie znaleziono osoby o ID: " + s.personId);
+          }
+        });
+      } else {
+        // New person submission
+        card.innerHTML = `
+          <h3>${s.fullName || "—"}</h3>
+          <p>Urodzony/a: ${s.birthDate || "?"} | Zmarły/a: ${s.deathDate || "?"}</p>
+          <p>Numer grobu: ${s.graveNumber || s.location || "—"}</p>
+          ${s.description ? `<p>${s.description}</p>` : ""}
+          ${s.photoURL ? `<img src="${s.photoURL}" alt="Zdjęcie" />` : ""}
+          <p style="font-size:0.75rem; color:#aaa;">Zgłoszono: ${s.submittedAt || "?"}</p>
+          <div class="pending-actions">
+            <button class="btn btn-green approve-btn" data-sid="${sid}">Zatwierdź</button>
+            <button class="btn btn-red reject-btn" data-sid="${sid}">Odrzuć</button>
+          </div>
+          <div class="status-msg" id="pstatus-${sid}"></div>
+        `;
+        listEl.appendChild(card);
+
+        card.querySelector(".approve-btn").addEventListener("click", () => approvePending(sid, s));
+      }
+
       card.querySelector(".reject-btn").addEventListener("click", () => rejectPending(sid, card));
     });
   } catch (err) {

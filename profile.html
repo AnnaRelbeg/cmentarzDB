@@ -269,7 +269,7 @@
 
   <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-  import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+  import { getFirestore, doc, getDoc, updateDoc, addDoc, collection } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
   import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
 
   const firebaseConfig = {
@@ -590,6 +590,39 @@ memoryForm.addEventListener("submit", async (e) => {
 if (window.location.pathname.indexOf('index.html') > -1) {
     window.location.replace(window.location.pathname.replace('index.html', ''));
   }
+
+  // ── Profile update suggestion form ─────────────────────────────
+  document.getElementById("show-update-form-btn").addEventListener("click", () => {
+    const form = document.getElementById("update-form");
+    form.style.display = form.style.display === "none" ? "block" : "none";
+  });
+
+  document.getElementById("update-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const message = document.getElementById("update-message").value.trim();
+    if (!message) return;
+
+    const submitBtn = e.target.querySelector("button[type='submit']");
+    submitBtn.disabled = true;
+
+    try {
+      await addDoc(collection(db, "pending_submissions"), {
+        type:       "update",
+        personId:   personId,
+        personName: document.getElementById("profile-name").textContent,
+        message:    message,
+        submittedAt: new Date().toISOString(),
+      });
+      document.getElementById("update-message").value = "";
+      document.getElementById("update-form").style.display = "none";
+      document.getElementById("update-success-msg").style.display = "block";
+    } catch (err) {
+      console.error("Update submission error:", err);
+      alert("Wystąpił błąd podczas wysyłania sugestii. Spróbuj ponownie.");
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
   </script>
 
 </body>
