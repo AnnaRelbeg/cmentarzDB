@@ -3,116 +3,881 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Panel</title>
+  <title>Panel Administratora</title>
   <link rel="stylesheet" href="styles.css" />
+  <style>
+    * { box-sizing: border-box; }
+    body { background: #f5f5f5; font-family: 'Open Sans', sans-serif; margin: 0; padding: 1rem; }
+
+    /* ── Login ── */
+    #login-screen {
+      max-width: 400px;
+      margin: 5rem auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    #login-screen h1 { margin-bottom: 1.5rem; color: #333; font-size: 1.5rem; }
+    #login-error { color: #a94442; margin-top: 0.75rem; display: none; font-size: 0.9rem; }
+
+    /* ── Admin UI ── */
+    #admin-ui { display: none; max-width: 800px; margin: 0 auto; }
+
+    #admin-header {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      padding: 1rem 1.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    #admin-header h1 { margin: 0; font-size: 1.3rem; color: #333; }
+    #admin-user { font-size: 0.85rem; color: #666; }
+
+    /* ── Tabs ── */
+    .tab-bar {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 0.6rem 1.2rem;
+      border: 2px solid #6a8b5f;
+      border-radius: 8px;
+      background: white;
+      color: #6a8b5f;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .tab-btn.active, .tab-btn:hover {
+      background: #6a8b5f;
+      color: white;
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Card container ── */
+    .admin-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .admin-card h2 { margin-top: 0; color: #333; font-size: 1.1rem; }
+
+    /* ── Form elements ── */
+    .field-group { margin-bottom: 0.9rem; }
+    .field-group label { display: block; font-size: 0.85rem; color: #555; margin-bottom: 0.3rem; font-weight: 600; }
+    .field-group input,
+    .field-group textarea,
+    .field-group select {
+      width: 100%;
+      padding: 0.55rem 0.75rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-family: inherit;
+    }
+    .field-group input:disabled { background: #f0f0f0; color: #888; cursor: not-allowed; }
+    .field-group textarea { resize: vertical; min-height: 80px; }
+
+    /* ── Buttons ── */
+    .btn {
+      padding: 0.55rem 1.2rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: opacity 0.2s;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-green  { background: #6a8b5f; color: white; }
+    .btn-red    { background: #a94442; color: white; }
+    .btn-gray   { background: #888; color: white; }
+    .btn-outline {
+      background: white;
+      color: #6a8b5f;
+      border: 2px solid #6a8b5f;
+    }
+    .btn-outline:hover { background: #6a8b5f; color: white; }
+
+    /* ── Search results ── */
+    .search-results { margin-top: 1rem; }
+    .result-card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      transition: background 0.15s;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .result-card:hover { background: #f0f5ee; border-color: #6a8b5f; }
+    .result-card .rc-name { font-weight: 600; color: #333; }
+    .result-card .rc-meta { font-size: 0.8rem; color: #777; }
+
+    /* ── Info banner ── */
+    .info-banner {
+      background: #fff8e1;
+      border: 1px solid #f0c040;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+      color: #555;
+      display: none;
+    }
+    .info-banner strong { color: #333; }
+
+    /* ── Photo gallery in edit ── */
+    .photo-gallery-edit {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+    .photo-thumb-wrap {
+      position: relative;
+      width: 90px;
+      height: 90px;
+    }
+    .photo-thumb-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+    .photo-thumb-wrap .remove-photo {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: #a94442;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    /* ── Pending submission cards ── */
+    .pending-card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    .pending-card h3 { margin: 0 0 0.5rem; color: #333; font-size: 1rem; }
+    .pending-card p { margin: 0.2rem 0; font-size: 0.85rem; color: #555; }
+    .pending-card img { max-width: 120px; border-radius: 6px; margin-top: 0.5rem; }
+    .pending-actions { display: flex; gap: 0.5rem; margin-top: 0.75rem; flex-wrap: wrap; }
+
+    /* ── Status messages ── */
+    .status-msg {
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      margin-top: 0.75rem;
+      font-size: 0.9rem;
+      display: none;
+    }
+    .status-msg.success { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+    .status-msg.error   { background: #fdecea; color: #a94442; border: 1px solid #f5c6cb; }
+
+    .section-divider { border: none; border-top: 1px solid #eee; margin: 1.5rem 0; }
+
+    #form-mode-badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 12px;
+      margin-left: 0.5rem;
+      font-weight: 600;
+      vertical-align: middle;
+    }
+    .badge-edit   { background: #e3f2fd; color: #1565c0; }
+    .badge-create { background: #e8f5e9; color: #2e7d32; }
+
+    .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid #ccc; border-top-color: #6a8b5f; border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; margin-left: 6px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
 </head>
 <body>
-  <div id="admin-container" style="max-width: 700px; margin: 3rem auto; background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
-    <h1 style="text-align: center;">🛠️ Panel Administratora</h1>
-    <a class="back-button" href="index.html">← Powrót</a>
-    <script>
-        const adminPassword = "twojehaslo123"; // 🛡️ Set your admin password here
-      
-        const accessGranted = prompt("🔐 Podaj hasło administratora:");
-        if (accessGranted !== adminPassword) {
-          document.body.innerHTML = "<h2 style='text-align:center; margin-top:4rem;'>⛔ Dostęp zabroniony</h2>";
-          throw new Error("Nieprawidłowe hasło administratora.");
-        }
-      </script>
-      
-    <section style="margin-bottom: 2rem;">
-      <h2>➕ Zgłoś nową osobę</h2>
-      <form id="submission-form">
-        <input type="text" id="fullName" placeholder="Imię i nazwisko" required style="width: 100%; margin-bottom: 0.5rem;" />
-        <input type="date" id="birthDate" placeholder="Data urodzenia" required style="width: 100%; margin-bottom: 0.5rem;" />
-        <input type="date" id="deathDate" placeholder="Data śmierci" required style="width: 100%; margin-bottom: 0.5rem;" />
-        <input type="text" id="graveNumber" placeholder="Numer grobu" required style="width: 100%; margin-bottom: 0.5rem;" />
-        <textarea id="description" placeholder="Krótki opis" rows="4" style="width: 100%; margin-bottom: 0.5rem;"></textarea>
-        <input type="file" id="photoFile" accept="image/*" style="margin-bottom: 1rem;" />
-        <button type="submit" style="padding: 0.5rem 1rem; background-color: #6a8b5f; color: white; border: none; border-radius: 8px;">Prześlij do weryfikacji</button>
-        <p id="submit-success" style="color: green; display: none; margin-top: 1rem;">✅ Wpis został przesłany do weryfikacji</p>
-      </form>
-    </section>
 
-    <hr style="margin: 2rem 0;">
+<!-- ══════════════════════════════════════════
+     LOGIN SCREEN
+═══════════════════════════════════════════ -->
+<div id="login-screen">
+  <h1>Panel Administratora</h1>
+  <div class="field-group">
+    <label for="login-email">E-mail</label>
+    <input type="email" id="login-email" placeholder="admin@example.com" autocomplete="username" />
+  </div>
+  <div class="field-group">
+    <label for="login-password">Hasło</label>
+    <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" />
+  </div>
+  <button class="btn btn-green" id="login-btn" style="width:100%; margin-top:0.5rem;">Zaloguj się</button>
+  <p id="login-error">Nieprawidłowy e-mail lub hasło. Spróbuj ponownie.</p>
+</div>
 
-    <section style="margin-bottom: 2rem;">
-      <h2>🗑️ Usuń osobę</h2>
-      <form id="delete-form">
-        <input type="text" id="delete-id" placeholder="ID osoby do usunięcia" required style="width: 100%; margin-bottom: 0.5rem;" />
-        <button type="submit" style="padding: 0.5rem 1rem; background-color: #a94442; color: white; border: none; border-radius: 8px;">Usuń</button>
-      </form>
-    </section>
+<!-- ══════════════════════════════════════════
+     ADMIN UI (hidden until authenticated)
+═══════════════════════════════════════════ -->
+<div id="admin-ui">
+
+  <!-- Header -->
+  <div id="admin-header">
+    <div>
+      <a class="back-button" href="index.html" style="display:inline-block; margin-bottom:0.25rem;">← Powrót</a>
+      <h1>Panel Administratora</h1>
+    </div>
+    <div style="text-align:right;">
+      <div id="admin-user" style="margin-bottom:0.4rem;"></div>
+      <button class="btn btn-gray" id="logout-btn">Wyloguj</button>
+    </div>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-    import { getFirestore, collection, addDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
+  <!-- Tab bar -->
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="tab-edit">Edytuj / Utwórz</button>
+    <button class="tab-btn" data-tab="tab-pending">Oczekujące zgłoszenia</button>
+    <button class="tab-btn" data-tab="tab-delete">Usuń</button>
+  </div>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyChVtFHlA4mDuwx-xi7jLGMWvNYcNrrANM",
-      authDomain: "cmentarz-dabrowki.firebaseapp.com",
-      projectId: "cmentarz-dabrowki",
-      storageBucket: "cmentarz-dabrowki.appspot.com",
-      messagingSenderId: "502809191219",
-      appId: "1:502809191219:web:9526a28823974e90c91446"
-    };
+  <!-- ── TAB A: Edit / Create ── -->
+  <div id="tab-edit" class="tab-panel active">
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
+    <!-- Search -->
+    <div class="admin-card">
+      <h2>Wyszukaj istniejącą osobę</h2>
+      <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+        <input type="text" id="search-input" placeholder="Imię, nazwisko lub ID…" style="flex:1; padding:0.55rem 0.75rem; border:1px solid #ccc; border-radius:8px; font-size:0.95rem;" />
+        <button class="btn btn-outline" id="search-btn">Szukaj</button>
+        <button class="btn btn-green" id="new-person-btn">+ Utwórz nową osobę</button>
+      </div>
+      <div class="search-results" id="search-results"></div>
+    </div>
 
-    // ✅ Submit new person to pending_submissions
-    document.getElementById("submission-form").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const fullName = document.getElementById("fullName").value.trim();
-      const birthDate = document.getElementById("birthDate").value;
-      const deathDate = document.getElementById("deathDate").value;
-      const graveNumber = document.getElementById("graveNumber").value.trim();
-      const description = document.getElementById("description").value.trim();
-      const photoFile = document.getElementById("photoFile").files[0];
+    <!-- Form -->
+    <div class="admin-card" id="edit-form-card" style="display:none;">
+      <h2>
+        Dane osoby
+        <span id="form-mode-badge"></span>
+      </h2>
 
-      let photoURL = "";
+      <div class="field-group">
+        <label for="f-id">ID dokumentu</label>
+        <input type="text" id="f-id" placeholder="np. 0005 lub 0005.1" />
+      </div>
+      <div class="field-group">
+        <label for="f-fullName">Imię i nazwisko *</label>
+        <input type="text" id="f-fullName" required />
+      </div>
+      <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+        <div class="field-group" style="flex:1; min-width:130px;">
+          <label for="f-birthDate">Data urodzenia *</label>
+          <input type="date" id="f-birthDate" required />
+        </div>
+        <div class="field-group" style="flex:1; min-width:130px;">
+          <label for="f-deathDate">Data śmierci *</label>
+          <input type="date" id="f-deathDate" required />
+        </div>
+        <div class="field-group" style="flex:1; min-width:80px;">
+          <label for="f-age">Wiek</label>
+          <input type="number" id="f-age" min="0" max="150" />
+        </div>
+      </div>
+      <div class="field-group">
+        <label for="f-location">Lokalizacja (numer grobu)</label>
+        <input type="text" id="f-location" placeholder="np. 0005" />
+        <div class="info-banner" id="grave-banner"></div>
+      </div>
+      <div class="field-group">
+        <label for="f-description">Opis</label>
+        <textarea id="f-description" rows="4"></textarea>
+      </div>
 
-      try {
-        if (photoFile) {
-          const photoRef = ref(storage, `pending_photos/${Date.now()}_${photoFile.name}`);
-          await uploadBytes(photoRef, photoFile);
-          photoURL = await getDownloadURL(photoRef);
-        }
+      <!-- Photo section (edit mode only) -->
+      <div id="photo-section" style="display:none;">
+        <hr class="section-divider" />
+        <div class="field-group">
+          <label>Zdjęcia w galerii</label>
+          <div class="photo-gallery-edit" id="photo-gallery-edit"></div>
+        </div>
+        <div class="field-group">
+          <label for="f-photo-upload">Dodaj zdjęcie</label>
+          <input type="file" id="f-photo-upload" accept="image/*" />
+          <button class="btn btn-outline" id="upload-photo-btn" style="margin-top:0.5rem;">Prześlij zdjęcie</button>
+          <div class="status-msg" id="upload-status"></div>
+        </div>
+      </div>
 
-        await addDoc(collection(db, "pending_submissions"), {
-          fullName,
-          birthDate,
-          deathDate,
-          graveNumber,
-          description,
-          photoURL,
-          submittedAt: new Date().toISOString()
-        });
+      <hr class="section-divider" />
+      <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
+        <button class="btn btn-green" id="save-btn">Zapisz osobę</button>
+        <button class="btn btn-gray" id="clear-form-btn">Anuluj</button>
+        <div class="status-msg" id="save-status" style="flex:1;"></div>
+      </div>
+    </div>
+  </div>
 
-        document.getElementById("submission-form").reset();
-        document.getElementById("submit-success").style.display = "block";
-      } catch (error) {
-        alert("❌ Błąd podczas przesyłania: " + error.message);
-        console.error("Submission error:", error);
-      }
+  <!-- ── TAB B: Pending Submissions ── -->
+  <div id="tab-pending" class="tab-panel">
+    <div class="admin-card">
+      <h2>Oczekujące zgłoszenia</h2>
+      <button class="btn btn-outline" id="refresh-pending-btn" style="margin-bottom:1rem;">Odśwież listę</button>
+      <div id="pending-list"><p style="color:#777;">Kliknij "Odśwież listę" aby załadować zgłoszenia.</p></div>
+    </div>
+  </div>
+
+  <!-- ── TAB C: Delete ── -->
+  <div id="tab-delete" class="tab-panel">
+    <div class="admin-card">
+      <h2>Usuń osobę</h2>
+      <p style="color:#777; font-size:0.9rem;">Operacja jest nieodwracalna. Podaj dokładne ID dokumentu.</p>
+      <div class="field-group">
+        <label for="delete-id">ID osoby</label>
+        <input type="text" id="delete-id" placeholder="np. 0005" />
+      </div>
+      <button class="btn btn-red" id="delete-btn">Usuń</button>
+      <div class="status-msg" id="delete-status"></div>
+    </div>
+  </div>
+
+</div><!-- /#admin-ui -->
+
+<script type="module">
+import { initializeApp }            from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+import { getFirestore, collection, getDocs, getDoc, doc, setDoc, updateDoc, deleteDoc, query, where, orderBy }
+                                    from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL }
+                                    from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
+                                    from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+
+// ── Firebase init ──────────────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyChVtFHlA4mDuwx-xi7jLGMWvNYcNrrANM",
+  authDomain: "cmentarz-dabrowki.firebaseapp.com",
+  projectId: "cmentarz-dabrowki",
+  storageBucket: "cmentarz-dabrowki.appspot.com",
+  messagingSenderId: "502809191219",
+  appId: "1:502809191219:web:9526a28823974e90c91446"
+};
+const app     = initializeApp(firebaseConfig);
+const db      = getFirestore(app);
+const storage = getStorage(app);
+const auth    = getAuth(app);
+
+// ── State ──────────────────────────────────
+let formMode = "create"; // "create" | "edit"
+let editingId = null;
+let currentGallery = []; // array of photo URLs for the person being edited
+let graveLookupTimer = null;
+
+// ── Auth state ─────────────────────────────
+onAuthStateChanged(auth, user => {
+  if (user) {
+    showAdminUI(user);
+  } else {
+    showLoginScreen();
+  }
+});
+
+function showLoginScreen() {
+  document.getElementById("login-screen").style.display = "block";
+  document.getElementById("admin-ui").style.display = "none";
+}
+function showAdminUI(user) {
+  document.getElementById("login-screen").style.display = "none";
+  document.getElementById("admin-ui").style.display = "block";
+  document.getElementById("admin-user").textContent = "Zalogowano: " + user.email;
+}
+
+// ── Login ──────────────────────────────────
+document.getElementById("login-btn").addEventListener("click", async () => {
+  const email    = document.getElementById("login-email").value.trim();
+  const password = document.getElementById("login-password").value;
+  const errEl    = document.getElementById("login-error");
+  errEl.style.display = "none";
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch (e) {
+    errEl.style.display = "block";
+    console.error("Login error:", e.code);
+  }
+});
+document.getElementById("login-password").addEventListener("keydown", e => {
+  if (e.key === "Enter") document.getElementById("login-btn").click();
+});
+
+// ── Logout ─────────────────────────────────
+document.getElementById("logout-btn").addEventListener("click", () => signOut(auth));
+
+// ── Tab switching ──────────────────────────
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById(btn.dataset.tab).classList.add("active");
+  });
+});
+
+// ══════════════════════════════════════════
+// TAB A — Edit / Create
+// ══════════════════════════════════════════
+
+// ── Search ────────────────────────────────
+document.getElementById("search-btn").addEventListener("click", doSearch);
+document.getElementById("search-input").addEventListener("keydown", e => {
+  if (e.key === "Enter") doSearch();
+});
+
+async function doSearch() {
+  const term = document.getElementById("search-input").value.trim().toLowerCase();
+  if (!term) return;
+  const resultsEl = document.getElementById("search-results");
+  resultsEl.innerHTML = "<p style='color:#777;'>Szukam… <span class='spinner'></span></p>";
+
+  try {
+    let docs = [];
+    // Try sessionStorage cache first
+    const cached = sessionStorage.getItem("zmarli");
+    if (cached) {
+      docs = JSON.parse(cached);
+    } else {
+      const snap = await getDocs(collection(db, "zmarli"));
+      docs = snap.docs.map(d => d.data());
+      sessionStorage.setItem("zmarli", JSON.stringify(docs));
+      sessionStorage.setItem("zmarli_fetched", Date.now().toString());
+    }
+
+    const matches = docs.filter(p =>
+      (p.fullName || "").toLowerCase().includes(term) ||
+      (p.id || "").toLowerCase().includes(term)
+    );
+
+    if (matches.length === 0) {
+      resultsEl.innerHTML = "<p style='color:#777;'>Brak wyników.</p>";
+      return;
+    }
+
+    resultsEl.innerHTML = matches.map(p => `
+      <div class="result-card" data-id="${p.id}">
+        <div>
+          <div class="rc-name">${p.fullName || "—"}</div>
+          <div class="rc-meta">ID: ${p.id} | Grób: ${p.location || "—"} | ${p.birthDate || "?"} – ${p.deathDate || "?"}</div>
+        </div>
+        <button class="btn btn-outline" style="font-size:0.8rem; padding:0.35rem 0.7rem;">Edytuj</button>
+      </div>`).join("");
+
+    resultsEl.querySelectorAll(".result-card").forEach(card => {
+      card.addEventListener("click", () => loadPersonIntoForm(card.dataset.id, docs));
     });
+  } catch (err) {
+    resultsEl.innerHTML = "<p style='color:#a94442;'>Błąd wyszukiwania: " + err.message + "</p>";
+    console.error(err);
+  }
+}
 
-    // ✅ Delete person by ID
-    document.getElementById("delete-form").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const id = document.getElementById("delete-id").value.trim();
+async function loadPersonIntoForm(id, cachedDocs) {
+  let person = cachedDocs && cachedDocs.find(p => p.id === id);
+  if (!person) {
+    const snap = await getDoc(doc(db, "zmarli", id));
+    if (!snap.exists()) { alert("Nie znaleziono osoby o ID: " + id); return; }
+    person = snap.data();
+  }
 
-      try {
-        await deleteDoc(doc(db, "zmarli", id));
-        alert("✅ Osoba została usunięta.");
-      } catch (err) {
-        alert("❌ Błąd podczas usuwania.");
-        console.error(err);
-      }
+  formMode  = "edit";
+  editingId = id;
+  currentGallery = Array.isArray(person.photoGallery) ? [...person.photoGallery] : [];
+
+  document.getElementById("f-id").value          = person.id || "";
+  document.getElementById("f-id").disabled       = true;
+  document.getElementById("f-fullName").value    = person.fullName || "";
+  document.getElementById("f-birthDate").value   = person.birthDate || "";
+  document.getElementById("f-deathDate").value   = person.deathDate || "";
+  document.getElementById("f-age").value         = person.age != null ? person.age : "";
+  document.getElementById("f-location").value    = person.location || "";
+  document.getElementById("f-description").value = person.description || "";
+
+  setBadge("edit");
+  renderPhotoGallery();
+  document.getElementById("photo-section").style.display = "block";
+  document.getElementById("edit-form-card").style.display = "block";
+  document.getElementById("grave-banner").style.display = "none";
+  showStatus("save-status", "", "");
+  document.getElementById("edit-form-card").scrollIntoView({ behavior: "smooth" });
+}
+
+// ── New person button ──────────────────────
+document.getElementById("new-person-btn").addEventListener("click", () => {
+  formMode  = "create";
+  editingId = null;
+  currentGallery = [];
+
+  document.getElementById("f-id").value          = "";
+  document.getElementById("f-id").disabled       = false;
+  document.getElementById("f-fullName").value    = "";
+  document.getElementById("f-birthDate").value   = "";
+  document.getElementById("f-deathDate").value   = "";
+  document.getElementById("f-age").value         = "";
+  document.getElementById("f-location").value    = "";
+  document.getElementById("f-description").value = "";
+
+  setBadge("create");
+  document.getElementById("photo-section").style.display = "none";
+  document.getElementById("grave-banner").style.display = "none";
+  showStatus("save-status", "", "");
+  document.getElementById("edit-form-card").style.display = "block";
+  document.getElementById("edit-form-card").scrollIntoView({ behavior: "smooth" });
+});
+
+// ── Clear / cancel ─────────────────────────
+document.getElementById("clear-form-btn").addEventListener("click", () => {
+  document.getElementById("edit-form-card").style.display = "none";
+  document.getElementById("search-results").innerHTML = "";
+  document.getElementById("search-input").value = "";
+});
+
+function setBadge(mode) {
+  const badge = document.getElementById("form-mode-badge");
+  if (mode === "edit") {
+    badge.textContent = "Tryb edycji";
+    badge.className = "form-mode-badge badge-edit";
+  } else {
+    badge.textContent = "Nowa osoba";
+    badge.className = "form-mode-badge badge-create";
+  }
+}
+
+// ── Shared-grave lookup ────────────────────
+document.getElementById("f-location").addEventListener("input", () => {
+  clearTimeout(graveLookupTimer);
+  graveLookupTimer = setTimeout(doGraveLookup, 500);
+});
+
+async function doGraveLookup() {
+  const location = document.getElementById("f-location").value.trim();
+  const banner   = document.getElementById("grave-banner");
+  if (!location) { banner.style.display = "none"; return; }
+
+  try {
+    // Use cache if available
+    let docs = [];
+    const cached = sessionStorage.getItem("zmarli");
+    if (cached) {
+      docs = JSON.parse(cached);
+    } else {
+      const snap = await getDocs(collection(db, "zmarli"));
+      docs = snap.docs.map(d => d.data());
+    }
+
+    const matches = docs.filter(p =>
+      (p.location || "").trim() === location &&
+      p.id !== editingId // exclude self in edit mode
+    );
+
+    if (matches.length === 0) {
+      banner.style.display = "none";
+      return;
+    }
+
+    const names = matches.map(p => `${p.fullName} (ID: ${p.id})`).join(", ");
+    const suggestion = suggestNextId(matches.map(p => p.id), location);
+
+    banner.innerHTML = `
+      <strong>Ten numer grobu jest już przypisany do:</strong> ${names}<br>
+      ${suggestion ? `Sugerowane następne ID: <strong>${suggestion}</strong>
+        ${formMode === "create" ? `<button class="btn btn-outline" style="font-size:0.75rem; padding:0.2rem 0.5rem; margin-left:0.5rem;" id="use-suggestion-btn">Użyj</button>` : ""}` : ""}
+    `;
+    banner.style.display = "block";
+
+    if (formMode === "create" && suggestion) {
+      const useBtn = document.getElementById("use-suggestion-btn");
+      if (useBtn) useBtn.addEventListener("click", () => {
+        document.getElementById("f-id").value = suggestion;
+        banner.style.display = "none";
+      });
+    }
+  } catch (err) {
+    console.error("Grave lookup error:", err);
+  }
+}
+
+function suggestNextId(existingIds, baseLocation) {
+  // Strip any .X suffix from base location to get pure base
+  const base = baseLocation.replace(/\.\d+$/, "");
+  // Find all IDs that start with base (exact or with .X)
+  const related = existingIds.filter(id => id === base || id.startsWith(base + "."));
+  if (related.length === 0) return null;
+
+  // Find highest suffix
+  let max = 0;
+  related.forEach(id => {
+    const m = id.match(/\.(\d+)$/);
+    if (m) max = Math.max(max, parseInt(m[1], 10));
+    else if (id === base) max = Math.max(max, 0);
+  });
+  return `${base}.${max + 1}`;
+}
+
+// ── Photo gallery render ───────────────────
+function renderPhotoGallery() {
+  const container = document.getElementById("photo-gallery-edit");
+  container.innerHTML = currentGallery.length === 0
+    ? "<p style='color:#aaa; font-size:0.85rem;'>Brak zdjęć.</p>"
+    : currentGallery.map((url, i) => `
+        <div class="photo-thumb-wrap">
+          <img src="${url}" alt="Zdjęcie ${i+1}" />
+          <button class="remove-photo" data-index="${i}" title="Usuń zdjęcie">✕</button>
+        </div>`).join("");
+
+  container.querySelectorAll(".remove-photo").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const idx = parseInt(btn.dataset.index, 10);
+      currentGallery.splice(idx, 1);
+      renderPhotoGallery();
     });
-  </script>
+  });
+}
+
+// ── Upload photo ───────────────────────────
+document.getElementById("upload-photo-btn").addEventListener("click", async () => {
+  if (!editingId) return;
+  const file = document.getElementById("f-photo-upload").files[0];
+  if (!file) { showStatus("upload-status", "Wybierz plik.", "error"); return; }
+
+  const btn = document.getElementById("upload-photo-btn");
+  btn.disabled = true;
+  showStatus("upload-status", "Przesyłanie…", "");
+
+  try {
+    const photoRef = ref(storage, `photos/${editingId}/${Date.now()}.jpg`);
+    await uploadBytes(photoRef, file);
+    const url = await getDownloadURL(photoRef);
+    currentGallery.push(url);
+    renderPhotoGallery();
+    document.getElementById("f-photo-upload").value = "";
+    showStatus("upload-status", "Zdjęcie przesłane.", "success");
+  } catch (err) {
+    showStatus("upload-status", "Błąd: " + err.message, "error");
+    console.error(err);
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+// ── Save person ────────────────────────────
+document.getElementById("save-btn").addEventListener("click", async () => {
+  const id          = document.getElementById("f-id").value.trim();
+  const fullName    = document.getElementById("f-fullName").value.trim();
+  const birthDate   = document.getElementById("f-birthDate").value;
+  const deathDate   = document.getElementById("f-deathDate").value;
+  const ageRaw      = document.getElementById("f-age").value;
+  const location    = document.getElementById("f-location").value.trim();
+  const description = document.getElementById("f-description").value.trim();
+
+  if (!id)       { showStatus("save-status", "ID jest wymagane.", "error"); return; }
+  if (!fullName) { showStatus("save-status", "Imię i nazwisko jest wymagane.", "error"); return; }
+  if (!birthDate || !deathDate) { showStatus("save-status", "Daty urodzenia i śmierci są wymagane.", "error"); return; }
+
+  const btn = document.getElementById("save-btn");
+  btn.disabled = true;
+  showStatus("save-status", "Zapisywanie…", "");
+
+  const data = {
+    fullName,
+    birthDate,
+    deathDate,
+    location,
+    description,
+    ...(ageRaw !== "" ? { age: parseInt(ageRaw, 10) } : {}),
+  };
+
+  try {
+    if (formMode === "create") {
+      await setDoc(doc(db, "zmarli", id), { id, ...data, photoGallery: currentGallery, candles: [], memories: [] });
+    } else {
+      // edit: never overwrite id, candles, memories
+      await updateDoc(doc(db, "zmarli", id), { ...data, photoGallery: currentGallery });
+    }
+
+    // Invalidate sessionStorage cache
+    sessionStorage.removeItem("zmarli");
+    sessionStorage.removeItem("zmarli_fetched");
+
+    showStatus("save-status", "Zapisano pomyślnie.", "success");
+    if (formMode === "create") {
+      // Switch to edit mode for the new doc
+      formMode  = "edit";
+      editingId = id;
+      document.getElementById("f-id").disabled = true;
+      setBadge("edit");
+      document.getElementById("photo-section").style.display = "block";
+      renderPhotoGallery();
+    }
+  } catch (err) {
+    showStatus("save-status", "Błąd: " + err.message, "error");
+    console.error(err);
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+// ══════════════════════════════════════════
+// TAB B — Pending Submissions
+// ══════════════════════════════════════════
+
+document.getElementById("refresh-pending-btn").addEventListener("click", loadPendingSubmissions);
+
+async function loadPendingSubmissions() {
+  const listEl = document.getElementById("pending-list");
+  listEl.innerHTML = "<p style='color:#777;'>Ładowanie… <span class='spinner'></span></p>";
+
+  try {
+    const snap = await getDocs(query(collection(db, "pending_submissions"), orderBy("submittedAt")));
+    if (snap.empty) {
+      listEl.innerHTML = "<p style='color:#777;'>Brak oczekujących zgłoszeń.</p>";
+      return;
+    }
+
+    listEl.innerHTML = "";
+    snap.docs.forEach(docSnap => {
+      const s   = docSnap.data();
+      const sid = docSnap.id;
+      const card = document.createElement("div");
+      card.className = "pending-card";
+      card.innerHTML = `
+        <h3>${s.fullName || "—"}</h3>
+        <p>Urodzony/a: ${s.birthDate || "?"} | Zmarły/a: ${s.deathDate || "?"}</p>
+        <p>Numer grobu: ${s.graveNumber || s.location || "—"}</p>
+        ${s.description ? `<p>${s.description}</p>` : ""}
+        ${s.photoURL ? `<img src="${s.photoURL}" alt="Zdjęcie" />` : ""}
+        <p style="font-size:0.75rem; color:#aaa;">Zgłoszono: ${s.submittedAt || "?"}</p>
+        <div class="pending-actions">
+          <button class="btn btn-green approve-btn" data-sid="${sid}">Zatwierdź</button>
+          <button class="btn btn-red reject-btn" data-sid="${sid}">Odrzuć</button>
+        </div>
+        <div class="status-msg" id="pstatus-${sid}"></div>
+      `;
+      listEl.appendChild(card);
+
+      card.querySelector(".approve-btn").addEventListener("click", () => approvePending(sid, s));
+      card.querySelector(".reject-btn").addEventListener("click", () => rejectPending(sid, card));
+    });
+  } catch (err) {
+    listEl.innerHTML = "<p style='color:#a94442;'>Błąd: " + err.message + "</p>";
+    console.error(err);
+  }
+}
+
+async function approvePending(sid, s) {
+  const newId = prompt("Podaj ID dla tej osoby (np. 0042):");
+  if (!newId || !newId.trim()) return;
+  const id = newId.trim();
+
+  const statusEl = document.getElementById("pstatus-" + sid);
+  showStatusEl(statusEl, "Zapisywanie…", "");
+
+  try {
+    await setDoc(doc(db, "zmarli", id), {
+      id,
+      fullName:     s.fullName || "",
+      birthDate:    s.birthDate || "",
+      deathDate:    s.deathDate || "",
+      location:     s.graveNumber || s.location || "",
+      description:  s.description || "",
+      photoGallery: s.photoURL ? [s.photoURL] : [],
+      candles:      [],
+      memories:     [],
+    });
+    await deleteDoc(doc(db, "pending_submissions", sid));
+    sessionStorage.removeItem("zmarli");
+    sessionStorage.removeItem("zmarli_fetched");
+    showStatusEl(statusEl, "Zatwierdzono i zapisano jako ID: " + id, "success");
+    // Hide action buttons
+    const card = statusEl.closest(".pending-card");
+    card.querySelectorAll(".approve-btn, .reject-btn").forEach(b => b.disabled = true);
+  } catch (err) {
+    showStatusEl(statusEl, "Błąd: " + err.message, "error");
+    console.error(err);
+  }
+}
+
+async function rejectPending(sid, cardEl) {
+  if (!confirm("Na pewno odrzucić to zgłoszenie? Operacja jest nieodwracalna.")) return;
+  try {
+    await deleteDoc(doc(db, "pending_submissions", sid));
+    cardEl.style.opacity = "0.4";
+    cardEl.querySelectorAll(".approve-btn, .reject-btn").forEach(b => b.disabled = true);
+    const statusEl = document.getElementById("pstatus-" + sid);
+    showStatusEl(statusEl, "Zgłoszenie odrzucone.", "error");
+  } catch (err) {
+    alert("Błąd: " + err.message);
+    console.error(err);
+  }
+}
+
+// ══════════════════════════════════════════
+// TAB C — Delete
+// ══════════════════════════════════════════
+
+document.getElementById("delete-btn").addEventListener("click", async () => {
+  const id = document.getElementById("delete-id").value.trim();
+  if (!id) { showStatus("delete-status", "Podaj ID.", "error"); return; }
+  if (!confirm(`Na pewno usunąć osobę o ID: "${id}"? Operacja jest nieodwracalna.`)) return;
+
+  const btn = document.getElementById("delete-btn");
+  btn.disabled = true;
+  showStatus("delete-status", "Usuwanie…", "");
+
+  try {
+    await deleteDoc(doc(db, "zmarli", id));
+    sessionStorage.removeItem("zmarli");
+    sessionStorage.removeItem("zmarli_fetched");
+    showStatus("delete-status", `Osoba "${id}" została usunięta.`, "success");
+    document.getElementById("delete-id").value = "";
+  } catch (err) {
+    showStatus("delete-status", "Błąd: " + err.message, "error");
+    console.error(err);
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+// ── Helpers ────────────────────────────────
+function showStatus(elId, msg, type) {
+  showStatusEl(document.getElementById(elId), msg, type);
+}
+function showStatusEl(el, msg, type) {
+  if (!el) return;
+  el.textContent = msg;
+  el.className = "status-msg" + (type ? " " + type : "");
+  el.style.display = msg ? "block" : "none";
+}
+</script>
 </body>
 </html>
