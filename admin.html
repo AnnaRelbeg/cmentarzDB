@@ -288,7 +288,7 @@
 
       <div class="field-group">
         <label for="f-id">ID dokumentu</label>
-        <input type="text" id="f-id" placeholder="np. 0005 lub 0005.1" />
+        <input type="text" id="f-id" placeholder="automatycznie sugerowane" />
       </div>
       <div class="field-group">
         <label for="f-fullName">Imię i nazwisko *</label>
@@ -533,13 +533,14 @@ async function loadPersonIntoForm(id, cachedDocs) {
 }
 
 // ── New person button ──────────────────────
-document.getElementById("new-person-btn").addEventListener("click", () => {
+document.getElementById("new-person-btn").addEventListener("click", async () => {
   formMode  = "create";
   editingId = null;
   currentGallery = [];
 
-  document.getElementById("f-id").value          = "";
-  document.getElementById("f-id").disabled       = false;
+  const idField = document.getElementById("f-id");
+  idField.value    = "…";
+  idField.disabled = false;
   document.getElementById("f-fullName").value    = "";
   document.getElementById("f-birthDate").value   = "";
   document.getElementById("f-deathDate").value   = "";
@@ -553,7 +554,38 @@ document.getElementById("new-person-btn").addEventListener("click", () => {
   showStatus("save-status", "", "");
   document.getElementById("edit-form-card").style.display = "block";
   document.getElementById("edit-form-card").scrollIntoView({ behavior: "smooth" });
+
+  idField.value = await suggestNextBaseId();
 });
+
+// ── Auto-suggest next sequential ID ───────
+async function suggestNextBaseId() {
+  try {
+    let docs = [];
+    const cached = sessionStorage.getItem("zmarli");
+    if (cached) {
+      docs = JSON.parse(cached);
+    } else {
+      const snap = await getDocs(collection(db, "zmarli"));
+      docs = snap.docs.map(d => d.data());
+      sessionStorage.setItem("zmarli", JSON.stringify(docs));
+      sessionStorage.setItem("zmarli_fetched", Date.now().toString());
+    }
+
+    let maxNum = 0;
+    docs.forEach(p => {
+      // Take only the base part before any dot suffix (e.g. "0005.1" → 5)
+      const base = String(p.id || "").split(".")[0];
+      const num  = parseInt(base, 10);
+      if (!isNaN(num)) maxNum = Math.max(maxNum, num);
+    });
+
+    return String(maxNum + 1).padStart(4, "0");
+  } catch (err) {
+    console.error("ID suggestion error:", err);
+    return "";
+  }
+}
 
 // ── Clear / cancel ─────────────────────────
 document.getElementById("clear-form-btn").addEventListener("click", () => {
