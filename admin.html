@@ -584,7 +584,10 @@ document.getElementById("new-person-btn").addEventListener("click", async () => 
 // ── Cache helper ───────────────────────────
 async function getAllDocs() {
   const cached = sessionStorage.getItem("zmarli");
-  if (cached) return JSON.parse(cached);
+  if (cached) {
+    const parsed = JSON.parse(cached);
+    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+  }
   const snap = await getDocs(collection(db, "zmarli"));
   const docs = snap.docs.map(d => d.data());
   sessionStorage.setItem("zmarli", JSON.stringify(docs));
@@ -638,26 +641,31 @@ document.querySelectorAll("input[name='loc-type']").forEach(radio => {
 // ── Build existing locations dropdown ──────
 async function buildLocationDropdown() {
   const select = document.getElementById("f-location-select");
-  select.innerHTML = `<option value="">— Wybierz numer grobu —</option>`;
+  select.innerHTML = `<option value="">Ładowanie…</option>`;
   select.disabled = true;
 
   try {
     const docs = await getAllDocs();
 
-    // Group by location
+    // Group by location (fallback to graveNumber for older records)
     const byLocation = {};
     docs.forEach(p => {
-      const loc = (p.location || "").trim();
+      const loc = (p.location || p.graveNumber || "").trim();
       if (!loc) return;
       if (!byLocation[loc]) byLocation[loc] = [];
       byLocation[loc].push(p.fullName || p.id);
     });
 
-    // Sort numerically where possible, then alphabetically
     const sorted = Object.entries(byLocation).sort(([a], [b]) =>
       a.localeCompare(b, undefined, { numeric: true })
     );
 
+    if (sorted.length === 0) {
+      select.innerHTML = `<option value="">Brak lokalizacji w bazie</option>`;
+      return;
+    }
+
+    select.innerHTML = `<option value="">— Wybierz numer grobu —</option>`;
     sorted.forEach(([loc, names]) => {
       const opt = document.createElement("option");
       opt.value = loc;
@@ -666,6 +674,7 @@ async function buildLocationDropdown() {
     });
   } catch (err) {
     console.error("Location dropdown error:", err);
+    select.innerHTML = `<option value="">Błąd ładowania (${err.message})</option>`;
   } finally {
     select.disabled = false;
   }
