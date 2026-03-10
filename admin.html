@@ -601,7 +601,7 @@ async function suggestNextLocation() {
     const docs = await getAllDocs();
     let maxNum = 0;
     docs.forEach(p => {
-      const num = parseInt(String(p.location || "").split(".")[0], 10);
+      const num = parseInt(String(p.location || p.graveNumber || "").split(".")[0], 10);
       if (!isNaN(num)) maxNum = Math.max(maxNum, num);
     });
     return String(maxNum + 1).padStart(4, "0");
@@ -650,7 +650,7 @@ async function buildLocationDropdown() {
     // Group by location (fallback to graveNumber for older records)
     const byLocation = {};
     docs.forEach(p => {
-      const loc = (p.location || p.graveNumber || "").trim();
+      const loc = String(p.location || p.graveNumber || "").trim();
       if (!loc) return;
       if (!byLocation[loc]) byLocation[loc] = [];
       byLocation[loc].push(p.fullName || p.id);
@@ -724,7 +724,7 @@ async function doGraveLookup() {
     const docs = await getAllDocs();
 
     const matches = docs.filter(p =>
-      (p.location || "").trim() === location &&
+      String(p.location || p.graveNumber || "").trim() === location &&
       p.id !== editingId // exclude self in edit mode
     );
 
