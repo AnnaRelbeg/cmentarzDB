@@ -489,7 +489,7 @@ async function doSearch() {
 
     const matches = docs.filter(p =>
       (p.fullName || "").toLowerCase().includes(term) ||
-      (p.id || "").toLowerCase().includes(term)
+      String(p.id || "").toLowerCase().includes(term)
     );
 
     if (matches.length === 0) {
